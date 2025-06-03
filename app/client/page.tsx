@@ -25,6 +25,7 @@ export default function ClientLoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    //Service based authentication
 
     try {
       const result = await AuthService.login(credentials)
