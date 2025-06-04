@@ -1,6 +1,7 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, useInView } from "framer-motion"
+import { useRef, useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Target, Eye, Award, Users, Globe, Zap } from "lucide-react"
@@ -18,6 +19,32 @@ const staggerContainer = {
       staggerChildren: 0.1,
     },
   },
+}
+
+function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number }) {
+  const [count, setCount] = useState(0)
+  const countRef = useRef(null)
+  const isInView = useInView(countRef, { once: true, margin: "-100px" })
+
+  useEffect(() => {
+    if (isInView) {
+      let startTime: number
+      const animate = (currentTime: number) => {
+        if (!startTime) startTime = currentTime
+        const progress = Math.min((currentTime - startTime) / (duration * 1000), 1)
+
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4)
+        setCount(Math.floor(easeOutQuart * end))
+
+        if (progress < 1) {
+          requestAnimationFrame(animate)
+        }
+      }
+      requestAnimationFrame(animate)
+    }
+  }, [isInView, end, duration])
+
+  return <span ref={countRef}>{count}</span>
 }
 
 export default function AboutPage() {
@@ -70,7 +97,7 @@ export default function AboutPage() {
           </motion.div>
           <motion.div variants={fadeInUp}>
             <Image
-              src="/placeholder.svg?height=400&width=600"
+              src="https://images.unsplash.com/photo-1565043666747-69f6646db940?w=600&h=400&fit=crop&crop=center"
               alt="Our Manufacturing Facility"
               width={600}
               height={400}
@@ -175,7 +202,7 @@ export default function AboutPage() {
           </div>
         </motion.div>
 
-        {/* Stats */}
+        {/* Stats with Animated Counters */}
         <motion.div
           initial="initial"
           whileInView="animate"
@@ -190,13 +217,16 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {[
-              { number: "15+", label: "Years of Experience" },
-              { number: "500+", label: "Product Variants" },
-              { number: "1000+", label: "Satisfied Clients" },
-              { number: "50+", label: "Countries Served" },
+              { number: 15, label: "Years of Experience", suffix: "+" },
+              { number: 500, label: "Product Variants", suffix: "+" },
+              { number: 1000, label: "Satisfied Clients", suffix: "+" },
+              { number: 50, label: "Countries Served", suffix: "+" },
             ].map((stat, index) => (
               <div key={index} className="text-center">
-                <div className="text-4xl font-bold text-teal-600 dark:text-green-400 mb-2">{stat.number}</div>
+                <div className="text-4xl font-bold text-teal-600 dark:text-green-400 mb-2">
+                  <AnimatedCounter end={stat.number} />
+                  {stat.suffix}
+                </div>
                 <div className="text-gray-600 dark:text-gray-300">{stat.label}</div>
               </div>
             ))}

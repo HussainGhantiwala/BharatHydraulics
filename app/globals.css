@@ -98,21 +98,40 @@ html {
   scroll-behavior: smooth;
 }
 
-/* Custom scrollbar */
+/* Custom themed scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
   @apply bg-gray-100 dark:bg-gray-800;
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 dark:bg-gray-600 rounded-full;
+  background: linear-gradient(180deg, #14b8a6 0%, #22c55e 100%);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400 dark:bg-gray-500;
+  background: linear-gradient(180deg, #0d9488 0%, #16a34a 100%);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-corner {
+  @apply bg-gray-100 dark:bg-gray-800;
+}
+
+/* Firefox scrollbar */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: #14b8a6 #f3f4f6;
+}
+
+.dark html {
+  scrollbar-color: #22c55e #1f2937;
 }
 
 /* Enhanced focus styles */
@@ -185,4 +204,17 @@ html {
 /* Loading spinner */
 .spinner {
   @apply w-6 h-6 border-2 border-gray-300 border-t-teal-600 rounded-full animate-spin;
+}
+
+/* 3D Transform utilities */
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
 }
