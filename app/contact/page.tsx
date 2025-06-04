@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState, useRef } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { useToast } from "@/hooks/use-toast"
 import { Phone, Mail, MapPin, Clock, Send } from "lucide-react"
+import emailjs from "@emailjs/browser"
+
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -19,29 +19,73 @@ export default function ContactPage() {
     company: "",
     message: "",
   })
+  const [formErrors, setFormErrors] = useState({
+    name: "",
+    email: "",
+    message: "",
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const { toast } = useToast()
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const validateForm = () => {
+    const errors = { name: "", email: "", message: "" }
+    const { name, email, message } = formData
+
+    if (!name.trim()) errors.name = "Name is required"
+    if (!email.trim()) {
+      errors.email = "Email is required"
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Email is invalid"
+    }
+    if (!message.trim()) errors.message = "Message is required"
+
+    setFormErrors(errors)
+    return Object.values(errors).every((val) => val === "")
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!validateForm()) return
+
     setIsSubmitting(true)
 
-    // Simulate form submission
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    emailjs
+      .sendForm(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!, 
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!, 
+        formRef.current!,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+      )
+      .then(
+        (result) => {
+          console.log(result.text)
+          toast({
+            title: "Message Sent!",
+            description: "We'll get back to you within 24 hours.",
+          })
 
-    toast({
-      title: "Message Sent!",
-      description: "We'll get back to you within 24 hours.",
-    })
-
-    setFormData({
-      name: "",
-      email: "",
-      phone: "",
-      company: "",
-      message: "",
-    })
-    setIsSubmitting(false)
+          setFormData({
+            name: "",
+            email: "",
+            phone: "",
+            company: "",
+            message: "",
+          })
+        },
+        (error) => {
+          console.log(error.text)
+          toast({
+            title: "Error",
+            description: "Something went wrong. Please try again.",
+            variant: "destructive",
+          })
+        }
+      )
+      .finally(() => {
+        setIsSubmitting(false)
+      })
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -53,7 +97,8 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Hero Section */}
+      {/* ...Hero Section, Contact Info Cards... */}
+
       <section className="py-20 bg-gradient-to-r from-teal-600 to-teal-800 dark:from-green-600 dark:to-green-800 text-white">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-5xl font-bold mb-6">Contact Us</h1>
@@ -129,7 +174,6 @@ export default function ContactPage() {
                 </Card>
               </div>
             </div>
-
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <Card>
@@ -137,7 +181,7 @@ export default function ContactPage() {
                   <CardTitle className="text-2xl text-gray-900 dark:text-white">Send us a Message</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <form onSubmit={handleSubmit} className="space-y-6">
+                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="name">Full Name *</Label>
@@ -149,6 +193,7 @@ export default function ContactPage() {
                           required
                           placeholder="Your full name"
                         />
+                        {formErrors.name && <p className="text-red-600 text-sm">{formErrors.name}</p>}
                       </div>
                       <div className="space-y-2">
                         <Label htmlFor="email">Email Address *</Label>
@@ -161,6 +206,7 @@ export default function ContactPage() {
                           required
                           placeholder="your.email@example.com"
                         />
+                        {formErrors.email && <p className="text-red-600 text-sm">{formErrors.email}</p>}
                       </div>
                     </div>
 
@@ -198,6 +244,7 @@ export default function ContactPage() {
                         rows={6}
                         placeholder="Tell us about your project requirements..."
                       />
+                      {formErrors.message && <p className="text-red-600 text-sm">{formErrors.message}</p>}
                     </div>
 
                     <Button
@@ -222,7 +269,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Map Section */}
+      {/* ...Map Section... */}
       <section className="py-20 bg-white dark:bg-gray-800">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -234,7 +281,7 @@ export default function ContactPage() {
             <p className="text-gray-600 dark:text-gray-400 text-lg">Interactive Map Coming Soon</p>
           </div>
         </div>
-      </section>
+        </section>
     </div>
   )
 }
