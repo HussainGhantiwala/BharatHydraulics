@@ -1,15 +1,20 @@
 "use client"
 
+import type React from "react"
+
 import { motion, useInView } from "framer-motion"
 import { useRef, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Shield, Truck, Award, Users, Wrench, Factory } from "lucide-react"
+import { ArrowRight, Shield, Truck, Award, Users, Wrench, Factory, Eye, ShoppingCart } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { BrandsCarousel } from "@/components/brands-carousel"
 import { FloatingParticles } from "@/components/floating-particles"
+import { QuotationModal } from "@/components/quotation-modal"
+import { useProducts } from "@/contexts/product-context"
+import type { Product } from "@/contexts/product-context"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -123,7 +128,96 @@ function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number
   return <span ref={countRef}>{count}</span>
 }
 
+// 3D Tilt Card Component - Professional Version
+function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const [direction, setDirection] = useState<string | null>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
+
+  // More subtle rotation values
+  const getRotation = () => {
+    switch (direction) {
+      case "top":
+        return { rotateX: 3, rotateY: 0 }
+      case "bottom":
+        return { rotateX: -3, rotateY: 0 }
+      case "left":
+        return { rotateX: 0, rotateY: -3 }
+      case "right":
+        return { rotateX: 0, rotateY: 3 }
+      default:
+        return { rotateX: 0, rotateY: 0 }
+    }
+  }
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!cardRef.current) return
+
+    const rect = cardRef.current.getBoundingClientRect()
+    const width = rect.width
+    const height = rect.height
+    const mouseX = e.clientX - rect.left
+    const mouseY = e.clientY - rect.top
+
+    // Determine which quadrant the mouse is in
+    const centerX = width / 2
+    const centerY = height / 2
+    const deltaX = mouseX - centerX
+    const deltaY = mouseY - centerY
+
+    // Only change direction when significantly away from center (reduces jitter)
+    if (Math.abs(deltaX) < width * 0.2 && Math.abs(deltaY) < height * 0.2) {
+      setDirection(null)
+      return
+    }
+
+    // Determine primary direction (horizontal or vertical)
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      setDirection(deltaX > 0 ? "right" : "left")
+    } else {
+      setDirection(deltaY > 0 ? "bottom" : "top")
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setDirection(null)
+  }
+
+  return (
+    <motion.div
+      ref={cardRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      animate={getRotation()}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        mass: 0.8,
+      }}
+      className={`${className} cursor-default`}
+      style={{ transformStyle: "preserve-3d" }}
+    >
+      <div style={{ transform: "translateZ(10px)" }}>{children}</div>
+    </motion.div>
+  )
+}
+
 export default function HomePage() {
+  const { products } = useProducts()
+  const featuredProducts = products.slice(0, 4)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [isQuotationModalOpen, setIsQuotationModalOpen] = useState(false)
+
+  const handleQuotationClick = (product: Product) => {
+    setSelectedProduct(product)
+    setIsQuotationModalOpen(true)
+  }
+
+  const closeQuotationModal = () => {
+    setIsQuotationModalOpen(false)
+    setSelectedProduct(null)
+  }
+
   return (
     <div className="min-h-screen">
       {/* Hero Section with Gradient Background */}
@@ -272,7 +366,7 @@ export default function HomePage() {
                 <div className="relative overflow-hidden rounded-3xl shadow-2xl group-hover:shadow-3xl transition-shadow duration-500">
                   <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.6 }}>
                     <Image
-                      src="/placeholder.svg?height=600&width=600"
+                      src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=600&fit=crop&crop=center"
                       alt="PVC Pipe Clamps and Flanges"
                       width={600}
                       height={600}
@@ -339,6 +433,143 @@ export default function HomePage() {
                   ease: "easeInOut",
                 }}
               />
+            </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Featured Products Section */}
+      <section className="py-24 bg-gray-50 dark:bg-gray-900/50">
+        <div className="container mx-auto px-4">
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-100px" }}
+            variants={staggerContainer}
+            className="text-center mb-20"
+          >
+            <motion.h2 variants={fadeInUp} className="text-4xl lg:text-5xl font-bold mb-6">
+              Featured
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-400 dark:to-green-400">
+                {" "}
+                Products
+              </span>
+            </motion.h2>
+            <motion.p variants={fadeInUp} className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+              Discover our most popular and innovative PVC pipe solutions
+            </motion.p>
+          </motion.div>
+
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={staggerContainer}
+            className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"
+          >
+            {featuredProducts.map((product, index) => (
+              <motion.div key={product.id} variants={fadeInUp}>
+                <TiltCard className="h-full">
+                  <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 shadow-lg group overflow-hidden relative bg-white dark:bg-gray-800 flex flex-col">
+                    <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-green-50/50 dark:from-teal-950/20 dark:to-green-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                    <CardHeader className="p-0 relative">
+                      <div className="relative overflow-hidden rounded-t-lg h-48">
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          transition={{ duration: 0.6 }}
+                          className="w-full h-full"
+                        >
+                          <Image
+                            src={
+                              product.image ||
+                              "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center" ||
+                              "/placeholder.svg"
+                            }
+                            alt={product.name}
+                            width={300}
+                            height={200}
+                            className="w-full h-full object-cover"
+                          />
+                        </motion.div>
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                        <div className="absolute top-3 right-3">
+                          <Badge variant="secondary" className="bg-white/90 text-gray-800 backdrop-blur-sm">
+                            {product.category}
+                          </Badge>
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <CardContent className="p-6 relative z-10 flex-1 flex flex-col">
+                      <CardTitle className="text-lg mb-3 line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-green-400 transition-colors duration-300 min-h-[3.5rem]">
+                        {product.name}
+                      </CardTitle>
+                      <CardDescription className="mb-4 line-clamp-3 text-sm flex-1 min-h-[4.5rem]">
+                        {product.description}
+                      </CardDescription>
+
+                      <div className="space-y-2 mb-6 text-xs">
+                        <div className="flex justify-between">
+                          <span className="text-gray-500 dark:text-gray-400">Material:</span>
+                          <span className="font-medium">{product.material}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500 dark:text-gray-400">Size:</span>
+                          <span className="font-medium">{product.sizeRange}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-500 dark:text-gray-400">Pressure:</span>
+                          <span className="font-medium">{product.pressureRating}</span>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-2 relative z-20 mt-auto">
+                        <Button
+                          asChild
+                          size="sm"
+                          className="flex-1 bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white"
+                        >
+                          <Link href={`/catalogue/${product.id}`}>
+                            <Eye className="mr-1 h-3 w-3" />
+                            View
+                          </Link>
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleQuotationClick(product)}
+                          className="flex-1 border-teal-200 dark:border-green-700 hover:bg-teal-50 dark:hover:bg-green-950"
+                        >
+                          <ShoppingCart className="mr-1 h-3 w-3" />
+                          Quote
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </TiltCard>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+            variants={fadeInUp}
+            className="text-center"
+          >
+            <motion.div whileHover={buttonHover} whileTap={buttonTap}>
+              <Button
+                asChild
+                size="lg"
+                className="bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-2xl transition-all duration-300 rounded-full"
+              >
+                <Link href="/catalogue">
+                  View All Products
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
             </motion.div>
           </motion.div>
         </div>
@@ -417,8 +648,8 @@ export default function HomePage() {
               },
             ].map((feature, index) => (
               <motion.div key={index} variants={fadeInUp}>
-                <motion.div whileHover={cardHover} className="h-full group cursor-pointer">
-                  <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 shadow-lg group overflow-hidden relative">
+                <TiltCard className="h-full">
+                  <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 shadow-lg group overflow-hidden relative">
                     <motion.div
                       className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                       style={{
@@ -429,10 +660,9 @@ export default function HomePage() {
                       <motion.div
                         className={`mx-auto w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:shadow-xl`}
                         whileHover={{
-                          rotate: [0, -10, 10, 0],
                           scale: 1.1,
                         }}
-                        transition={{ duration: 0.6 }}
+                        transition={{ duration: 0.3 }}
                       >
                         <feature.icon className="h-8 w-8 text-white" />
                       </motion.div>
@@ -446,7 +676,7 @@ export default function HomePage() {
                       </CardDescription>
                     </CardContent>
                   </Card>
-                </motion.div>
+                </TiltCard>
               </motion.div>
             ))}
           </motion.div>
@@ -513,7 +743,11 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Quotation Modal */}
+      {selectedProduct && (
+        <QuotationModal isOpen={isQuotationModalOpen} onClose={closeQuotationModal} product={selectedProduct} />
+      )}
     </div>
   )
 }
-  
