@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast"
 import { Phone, Mail, MapPin, Clock, Send } from "lucide-react"
 import emailjs from "@emailjs/browser"
 
+
 export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
@@ -52,10 +53,10 @@ export default function ContactPage() {
 
     emailjs
       .sendForm(
-        "service_fg371fe", 
-        "template_kj4q36z", 
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!, 
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!, 
         formRef.current!,
-        "4uq4UjxFAbqkZbiGL" 
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
       )
       .then(
         (result) => {
