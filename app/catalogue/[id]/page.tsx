@@ -9,6 +9,9 @@ import { useProducts } from "@/contexts/product-context"
 import { ArrowLeft, Download, Share2, ShoppingCart } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useState } from "react"
+import { QuotationModal } from "@/components/quotation-modal"
+import type { Product } from "@/contexts/product-context"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -20,6 +23,15 @@ export default function ProductDetailPage() {
   const params = useParams()
   const { products } = useProducts()
   const product = products.find((p) => p.id === params.id)
+  const [isQuotationModalOpen, setIsQuotationModalOpen] = useState(false)
+
+  const handleQuotationClick = () => {
+    setIsQuotationModalOpen(true)
+  }
+
+  const closeQuotationModal = () => {
+    setIsQuotationModalOpen(false)
+  }
 
   if (!product) {
     return (
@@ -119,7 +131,7 @@ export default function ProductDetailPage() {
                   <ul className="space-y-2">
                     {product.applications.map((app, index) => (
                       <li key={index} className="flex items-start">
-                        <span className="text-teal-600 dark:text-green-400 mr-2">•</span>
+                        <span className="text-tecal-600 dark:text-green-400 mr-2">•</span>
                         {app}
                       </li>
                     ))}
@@ -131,13 +143,11 @@ export default function ProductDetailPage() {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
-                asChild
+                onClick={handleQuotationClick}
                 className="flex-1 bg-teal-600 hover:bg-teal-700 dark:bg-green-600 dark:hover:bg-green-700"
               >
-                <Link href="/contact">
-                  <ShoppingCart className="mr-2 h-4 w-4" />
-                  Request Quote
-                </Link>
+                <ShoppingCart className="mr-2 h-4 w-4" />
+                Request Quote
               </Button>
               <Button variant="outline" className="flex-1">
                 <Download className="mr-2 h-4 w-4" />
@@ -149,7 +159,10 @@ export default function ProductDetailPage() {
             </div>
           </div>
         </motion.div>
+
+        {/* Quotation Modal */}
+        <QuotationModal isOpen={isQuotationModalOpen} onClose={closeQuotationModal} product={product} />
       </div>
     </div>
   )
-}
+} 

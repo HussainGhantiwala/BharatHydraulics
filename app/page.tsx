@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { motion, useInView, useMotionValue, useSpring, useTransform } from "framer-motion"
+import { motion, useInView } from "framer-motion"
 import { useRef, useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,7 +12,9 @@ import Link from "next/link"
 import Image from "next/image"
 import { BrandsCarousel } from "@/components/brands-carousel"
 import { FloatingParticles } from "@/components/floating-particles"
+import { QuotationModal } from "@/components/quotation-modal"
 import { useProducts } from "@/contexts/product-context"
+import type { Product } from "@/contexts/product-context"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -126,53 +128,76 @@ function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number
   return <span ref={countRef}>{count}</span>
 }
 
-// 3D Tilt Card Component
+// 3D Tilt Card Component - Professional Version
 function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  const x = useMotionValue(0)
-  const y = useMotionValue(0)
+  const [direction, setDirection] = useState<string | null>(null)
+  const cardRef = useRef<HTMLDivElement>(null)
 
-  const mouseXSpring = useSpring(x)
-  const mouseYSpring = useSpring(y)
-
-  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ["17.5deg", "-17.5deg"])
-  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ["-17.5deg", "17.5deg"])
+  // More subtle rotation values
+  const getRotation = () => {
+    switch (direction) {
+      case "top":
+        return { rotateX: 3, rotateY: 0 }
+      case "bottom":
+        return { rotateX: -3, rotateY: 0 }
+      case "left":
+        return { rotateX: 0, rotateY: -3 }
+      case "right":
+        return { rotateX: 0, rotateY: 3 }
+      default:
+        return { rotateX: 0, rotateY: 0 }
+    }
+  }
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect()
+    if (!cardRef.current) return
+
+    const rect = cardRef.current.getBoundingClientRect()
     const width = rect.width
     const height = rect.height
     const mouseX = e.clientX - rect.left
     const mouseY = e.clientY - rect.top
-    const xPct = mouseX / width - 0.5
-    const yPct = mouseY / height - 0.5
-    x.set(xPct)
-    y.set(yPct)
+
+    // Determine which quadrant the mouse is in
+    const centerX = width / 2
+    const centerY = height / 2
+    const deltaX = mouseX - centerX
+    const deltaY = mouseY - centerY
+
+    // Only change direction when significantly away from center (reduces jitter)
+    if (Math.abs(deltaX) < width * 0.2 && Math.abs(deltaY) < height * 0.2) {
+      setDirection(null)
+      return
+    }
+
+    // Determine primary direction (horizontal or vertical)
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      setDirection(deltaX > 0 ? "right" : "left")
+    } else {
+      setDirection(deltaY > 0 ? "bottom" : "top")
+    }
   }
 
   const handleMouseLeave = () => {
-    x.set(0)
-    y.set(0)
+    setDirection(null)
   }
 
   return (
     <motion.div
+      ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      style={{
-        rotateY: rotateY,
-        rotateX: rotateX,
-        transformStyle: "preserve-3d",
+      animate={getRotation()}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+        mass: 0.8,
       }}
-      className={`relative ${className}`}
+      className={`${className} cursor-default`}
+      style={{ transformStyle: "preserve-3d" }}
     >
-      <div
-        style={{
-          transform: "translateZ(75px)",
-          transformStyle: "preserve-3d",
-        }}
-      >
-        {children}
-      </div>
+      <div style={{ transform: "translateZ(10px)" }}>{children}</div>
     </motion.div>
   )
 }
@@ -180,6 +205,18 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
 export default function HomePage() {
   const { products } = useProducts()
   const featuredProducts = products.slice(0, 4)
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
+  const [isQuotationModalOpen, setIsQuotationModalOpen] = useState(false)
+
+  const handleQuotationClick = (product: Product) => {
+    setSelectedProduct(product)
+    setIsQuotationModalOpen(true)
+  }
+
+  const closeQuotationModal = () => {
+    setIsQuotationModalOpen(false)
+    setSelectedProduct(null)
+  }
 
   return (
     <div className="min-h-screen">
@@ -433,7 +470,7 @@ export default function HomePage() {
             {featuredProducts.map((product, index) => (
               <motion.div key={product.id} variants={fadeInUp}>
                 <TiltCard className="h-full">
-                  <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 shadow-lg group overflow-hidden relative bg-white dark:bg-gray-800">
+                  <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 shadow-lg group overflow-hidden relative bg-white dark:bg-gray-800 flex flex-col">
                     <div className="absolute inset-0 bg-gradient-to-br from-teal-50/50 to-green-50/50 dark:from-teal-950/20 dark:to-green-950/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                     <CardHeader className="p-0 relative">
@@ -446,7 +483,8 @@ export default function HomePage() {
                           <Image
                             src={
                               product.image ||
-                              "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center"
+                              "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center" ||
+                              "/placeholder.svg"
                             }
                             alt={product.name}
                             width={300}
@@ -463,11 +501,13 @@ export default function HomePage() {
                       </div>
                     </CardHeader>
 
-                    <CardContent className="p-6 relative z-10">
-                      <CardTitle className="text-lg mb-3 line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-green-400 transition-colors duration-300">
+                    <CardContent className="p-6 relative z-10 flex-1 flex flex-col">
+                      <CardTitle className="text-lg mb-3 line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-green-400 transition-colors duration-300 min-h-[3.5rem]">
                         {product.name}
                       </CardTitle>
-                      <CardDescription className="mb-4 line-clamp-3 text-sm">{product.description}</CardDescription>
+                      <CardDescription className="mb-4 line-clamp-3 text-sm flex-1 min-h-[4.5rem]">
+                        {product.description}
+                      </CardDescription>
 
                       <div className="space-y-2 mb-6 text-xs">
                         <div className="flex justify-between">
@@ -484,7 +524,7 @@ export default function HomePage() {
                         </div>
                       </div>
 
-                      <div className="flex gap-2">
+                      <div className="flex gap-2 relative z-20 mt-auto">
                         <Button
                           asChild
                           size="sm"
@@ -496,15 +536,13 @@ export default function HomePage() {
                           </Link>
                         </Button>
                         <Button
-                          asChild
                           size="sm"
                           variant="outline"
+                          onClick={() => handleQuotationClick(product)}
                           className="flex-1 border-teal-200 dark:border-green-700 hover:bg-teal-50 dark:hover:bg-green-950"
                         >
-                          <Link href="/contact">
-                            <ShoppingCart className="mr-1 h-3 w-3" />
-                            Quote
-                          </Link>
+                          <ShoppingCart className="mr-1 h-3 w-3" />
+                          Quote
                         </Button>
                       </div>
                     </CardContent>
@@ -611,7 +649,7 @@ export default function HomePage() {
             ].map((feature, index) => (
               <motion.div key={index} variants={fadeInUp}>
                 <TiltCard className="h-full">
-                  <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 shadow-lg group overflow-hidden relative">
+                  <Card className="h-full hover:shadow-xl transition-all duration-300 border-0 shadow-lg group overflow-hidden relative">
                     <motion.div
                       className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                       style={{
@@ -622,10 +660,9 @@ export default function HomePage() {
                       <motion.div
                         className={`mx-auto w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:shadow-xl`}
                         whileHover={{
-                          rotate: [0, -10, 10, 0],
                           scale: 1.1,
                         }}
-                        transition={{ duration: 0.6 }}
+                        transition={{ duration: 0.3 }}
                       >
                         <feature.icon className="h-8 w-8 text-white" />
                       </motion.div>
@@ -706,6 +743,11 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+
+      {/* Quotation Modal */}
+      {selectedProduct && (
+        <QuotationModal isOpen={isQuotationModalOpen} onClose={closeQuotationModal} product={selectedProduct} />
+      )}
     </div>
   )
 }

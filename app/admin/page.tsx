@@ -11,7 +11,25 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useProducts } from "@/contexts/product-context"
-import { Plus, Save, Trash2, Lock, Eye, EyeOff, Edit, Users, BarChart3, Package, Tags } from "lucide-react"
+import {
+  Plus,
+  Save,
+  Trash2,
+  Lock,
+  Eye,
+  EyeOff,
+  Edit,
+  Users,
+  BarChart3,
+  Package,
+  Tags,
+  AlertCircle,
+  RefreshCw,
+  FileText,
+  Mail,
+  Clock,
+  XCircle,
+} from "lucide-react"
 import { createClient } from "@supabase/supabase-js"
 import { ImageUpload } from "@/components/image-upload"
 
@@ -35,6 +53,25 @@ interface UserInquiry {
   created_at: string
 }
 
+interface Quotation {
+  id: string
+  product_id: string
+  product_name: string
+  customer_name: string
+  customer_email: string
+  customer_phone?: string
+  company?: string
+  quantity: string
+  preferred_size: string
+  preferred_material: string
+  additional_requirements?: string
+  status: "pending" | "quoted" | "accepted" | "rejected"
+  admin_response?: string
+  quoted_price?: number
+  created_at: string
+  updated_at: string
+}
+
 export default function AdminPage() {
   const {
     products,
@@ -45,17 +82,21 @@ export default function AdminPage() {
     addCategory,
     removeCategory,
     loading,
+    error,
     refreshData,
   } = useProducts()
+
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
   const [authError, setAuthError] = useState("")
   const [activeTab, setActiveTab] = useState("products")
   const [userInquiries, setUserInquiries] = useState<UserInquiry[]>([])
+  const [quotations, setQuotations] = useState<Quotation[]>([])
   const [editingProduct, setEditingProduct] = useState<string | null>(null)
   const [newCategory, setNewCategory] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [operationError, setOperationError] = useState<string | null>(null)
 
   const [formData, setFormData] = useState({
     name: "",
@@ -75,6 +116,7 @@ export default function AdminPage() {
     if (authenticated === "true") {
       setIsAuthenticated(true)
       fetchUserInquiries()
+      fetchQuotations()
     }
   }, [])
 
@@ -87,11 +129,57 @@ export default function AdminPage() {
 
       if (error) {
         console.error("Error fetching user inquiries:", error)
+        setOperationError(`Error fetching user inquiries: ${error.message}`)
       } else {
         setUserInquiries(data || [])
+        setOperationError(null)
       }
     } catch (error) {
       console.error("Error:", error)
+      setOperationError(`Unexpected error: ${error}`)
+    }
+  }
+
+  const fetchQuotations = async () => {
+    try {
+      const { data, error } = await supabase.from("quotations").select("*").order("created_at", { ascending: false })
+
+      if (error) {
+        console.error("Error fetching quotations:", error)
+        setOperationError(`Error fetching quotations: ${error.message}`)
+      } else {
+        setQuotations(data || [])
+        setOperationError(null)
+      }
+    } catch (error) {
+      console.error("Error:", error)
+      setOperationError(`Unexpected error: ${error}`)
+    }
+  }
+
+  const updateQuotationStatus = async (
+    quotationId: string,
+    status: string,
+    adminResponse?: string,
+    quotedPrice?: number,
+  ) => {
+    try {
+      const updateData: any = { status }
+      if (adminResponse) updateData.admin_response = adminResponse
+      if (quotedPrice) updateData.quoted_price = quotedPrice
+
+      const { error } = await supabase.from("quotations").update(updateData).eq("id", quotationId)
+
+      if (error) {
+        console.error("Error updating quotation:", error)
+        setOperationError(`Error updating quotation: ${error.message}`)
+      } else {
+        await fetchQuotations()
+        alert("Quotation updated successfully!")
+      }
+    } catch (error) {
+      console.error("Error:", error)
+      setOperationError(`Unexpected error: ${error}`)
     }
   }
 
@@ -102,6 +190,7 @@ export default function AdminPage() {
       setAuthError("")
       sessionStorage.setItem("admin_authenticated", "true")
       fetchUserInquiries()
+      fetchQuotations()
     } else {
       setAuthError("Invalid password. Please try again.")
       setPassword("")
@@ -113,26 +202,53 @@ export default function AdminPage() {
     sessionStorage.removeItem("admin_authenticated")
     setPassword("")
     setUserInquiries([])
+    setQuotations([])
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    setOperationError(null)
+
+    // Validate required fields
+    if (
+      !formData.name ||
+      !formData.description ||
+      !formData.category ||
+      !formData.material ||
+      !formData.sizeRange ||
+      !formData.pressureRating ||
+      !formData.temperatureRange
+    ) {
+      setOperationError("Please fill in all required fields.")
+      setIsSubmitting(false)
+      return
+    }
 
     const productData = {
-      name: formData.name,
-      description: formData.description,
+      name: formData.name.trim(),
+      description: formData.description.trim(),
       category: formData.category,
-      material: formData.material,
-      sizeRange: formData.sizeRange,
-      pressureRating: formData.pressureRating,
-      temperatureRange: formData.temperatureRange,
-      image: formData.image,
-      applications: formData.applications ? formData.applications.split("\n").filter((app) => app.trim()) : undefined,
+      material: formData.material.trim(),
+      sizeRange: formData.sizeRange.trim(),
+      pressureRating: formData.pressureRating.trim(),
+      temperatureRange: formData.temperatureRange.trim(),
+      image: formData.image.trim() || undefined,
+      applications: formData.applications
+        ? formData.applications
+            .split("\n")
+            .filter((app) => app.trim())
+            .map((app) => app.trim())
+        : undefined,
       additionalSpecs: formData.additionalSpecs
-        ? formData.additionalSpecs.split("\n").filter((spec) => spec.trim())
+        ? formData.additionalSpecs
+            .split("\n")
+            .filter((spec) => spec.trim())
+            .map((spec) => spec.trim())
         : undefined,
     }
+
+    console.log("Submitting product data:", productData)
 
     try {
       let success = false
@@ -141,15 +257,11 @@ export default function AdminPage() {
         if (success) {
           setEditingProduct(null)
           alert("Product updated successfully!")
-        } else {
-          alert("Error updating product. Please try again.")
         }
       } else {
         success = await addProduct(productData)
         if (success) {
           alert("Product added successfully!")
-        } else {
-          alert("Error adding product. Please try again.")
         }
       }
 
@@ -167,10 +279,13 @@ export default function AdminPage() {
           applications: "",
           additionalSpecs: "",
         })
+        setOperationError(null)
+      } else {
+        setOperationError(error || "Operation failed. Please try again.")
       }
     } catch (error) {
       console.error("Error:", error)
-      alert("An unexpected error occurred. Please try again.")
+      setOperationError(`An unexpected error occurred: ${error}`)
     } finally {
       setIsSubmitting(false)
     }
@@ -191,6 +306,7 @@ export default function AdminPage() {
       additionalSpecs: product.additionalSpecs ? product.additionalSpecs.join("\n") : "",
     })
     setActiveTab("products")
+    setOperationError(null)
   }
 
   const handleCancelEdit = () => {
@@ -207,39 +323,47 @@ export default function AdminPage() {
       applications: "",
       additionalSpecs: "",
     })
+    setOperationError(null)
   }
 
   const handleAddCategory = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (newCategory.trim()) {
-      const success = await addCategory(newCategory.trim())
-      if (success) {
-        setNewCategory("")
-        alert("Category added successfully!")
-      } else {
-        alert("Error adding category. Please try again.")
-      }
+    setOperationError(null)
+
+    if (!newCategory.trim()) {
+      setOperationError("Please enter a category name.")
+      return
+    }
+
+    const success = await addCategory(newCategory.trim())
+    if (success) {
+      setNewCategory("")
+      alert("Category added successfully!")
+      setOperationError(null)
+    } else {
+      setOperationError(error || "Failed to add category. Please try again.")
     }
   }
 
   const handleRemoveCategory = async (category: string) => {
     if (window.confirm(`Are you sure you want to remove the category "${category}"?`)) {
+      setOperationError(null)
       const success = await removeCategory(category)
       if (!success) {
-        alert(
-          `Cannot remove category "${category}" because products are using it. Please reassign or delete these products first.`,
-        )
+        setOperationError(error || `Cannot remove category "${category}". It may be in use by existing products.`)
       }
     }
   }
 
   const handleRemoveProduct = async (productId: string) => {
     if (window.confirm(`Are you sure you want to remove this product?`)) {
+      setOperationError(null)
       const success = await removeProduct(productId)
       if (success) {
         alert("Product removed successfully!")
+        setOperationError(null)
       } else {
-        alert("Error removing product. Please try again.")
+        setOperationError(error || "Failed to remove product. Please try again.")
       }
     }
   }
@@ -256,6 +380,28 @@ export default function AdminPage() {
       ...formData,
       category: value,
     })
+  }
+
+  const handleRefresh = async () => {
+    setOperationError(null)
+    await refreshData()
+    await fetchUserInquiries()
+    await fetchQuotations()
+  }
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100"
+      case "quoted":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
+      case "accepted":
+        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
+      case "rejected":
+        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100"
+    }
   }
 
   if (!isAuthenticated) {
@@ -358,14 +504,32 @@ export default function AdminPage() {
                 <span className="text-teal-600 dark:text-green-400"> Management</span>
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                Manage your products, categories, and view customer inquiries.
+                Manage your products, categories, quotations, and view customer inquiries.
               </p>
             </div>
-            <Button onClick={handleLogout} variant="outline" className="ml-4">
-              Logout
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleRefresh} variant="outline" className="ml-4">
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Refresh
+              </Button>
+              <Button onClick={handleLogout} variant="outline">
+                Logout
+              </Button>
+            </div>
           </div>
         </motion.div>
+
+        {/* Error Display */}
+        {(error || operationError) && (
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+            <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
+              <div className="flex items-center">
+                <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mr-2" />
+                <p className="text-red-800 dark:text-red-200">{error || operationError}</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Navigation Tabs */}
         <motion.div initial="initial" animate="animate" variants={fadeInUp} className="mb-8">
@@ -373,6 +537,7 @@ export default function AdminPage() {
             {[
               { id: "products", label: "Products", icon: Package },
               { id: "categories", label: "Categories", icon: Tags },
+              { id: "quotations", label: "Quotations", icon: FileText },
               { id: "traffic", label: "User Traffic", icon: Users },
               { id: "analytics", label: "Analytics", icon: BarChart3 },
             ].map((tab) => (
@@ -386,6 +551,11 @@ export default function AdminPage() {
               >
                 <tab.icon className="mr-2 h-4 w-4" />
                 {tab.label}
+                {tab.id === "quotations" && quotations.length > 0 && (
+                  <Badge variant="secondary" className="ml-2 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">
+                    {quotations.filter((q) => q.status === "pending").length}
+                  </Badge>
+                )}
               </Button>
             ))}
           </div>
@@ -517,7 +687,7 @@ export default function AdminPage() {
                         value={formData.applications}
                         onChange={handleChange}
                         rows={4}
-                        placeholder="Water supply systems\nIndustrial piping\nChemical processing\nHVAC systems"
+                        placeholder="Water supply systems&#10;Industrial piping&#10;Chemical processing&#10;HVAC systems"
                       />
                     </div>
 
@@ -529,7 +699,7 @@ export default function AdminPage() {
                         value={formData.additionalSpecs}
                         onChange={handleChange}
                         rows={4}
-                        placeholder="NSF certified\nUV resistant\nCorrosion resistant\nEasy installation"
+                        placeholder="NSF certified&#10;UV resistant&#10;Corrosion resistant&#10;Easy installation"
                       />
                     </div>
 
@@ -541,7 +711,7 @@ export default function AdminPage() {
                         disabled={isSubmitting}
                       >
                         <Save className="mr-2 h-4 w-4" />
-                        {editingProduct ? "Update Product" : "Add Product"}
+                        {isSubmitting ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
                       </Button>
                       {editingProduct && (
                         <Button type="button" variant="outline" onClick={handleCancelEdit} size="lg">
@@ -670,6 +840,148 @@ export default function AdminPage() {
           </motion.div>
         )}
 
+        {/* Quotations Tab */}
+        {activeTab === "quotations" && (
+          <motion.div initial="initial" animate="animate" variants={fadeInUp}>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-2xl flex items-center">
+                  <FileText className="mr-2 h-6 w-6" />
+                  Quotation Requests ({quotations.length})
+                </CardTitle>
+                <CardDescription>Manage customer quotation requests and provide pricing.</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6 max-h-96 overflow-y-auto">
+                  {quotations.map((quotation) => (
+                    <motion.div
+                      key={quotation.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-6 border rounded-lg hover:shadow-md transition-shadow"
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h4 className="font-semibold text-lg">{quotation.product_name}</h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Request from {quotation.customer_name}
+                          </p>
+                        </div>
+                        <Badge className={getStatusColor(quotation.status)}>
+                          {quotation.status.charAt(0).toUpperCase() + quotation.status.slice(1)}
+                        </Badge>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                          <h5 className="font-medium mb-2">Customer Details</h5>
+                          <div className="space-y-1 text-sm">
+                            <p>
+                              <span className="font-medium">Email:</span> {quotation.customer_email}
+                            </p>
+                            {quotation.customer_phone && (
+                              <p>
+                                <span className="font-medium">Phone:</span> {quotation.customer_phone}
+                              </p>
+                            )}
+                            {quotation.company && (
+                              <p>
+                                <span className="font-medium">Company:</span> {quotation.company}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <h5 className="font-medium mb-2">Requirements</h5>
+                          <div className="space-y-1 text-sm">
+                            <p>
+                              <span className="font-medium">Quantity:</span> {quotation.quantity}
+                            </p>
+                            <p>
+                              <span className="font-medium">Size:</span> {quotation.preferred_size}
+                            </p>
+                            <p>
+                              <span className="font-medium">Material:</span> {quotation.preferred_material}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {quotation.additional_requirements && (
+                        <div className="mb-4">
+                          <h5 className="font-medium mb-2">Additional Requirements</h5>
+                          <p className="text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                            {quotation.additional_requirements}
+                          </p>
+                        </div>
+                      )}
+
+                      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
+                        <span className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {new Date(quotation.created_at).toLocaleDateString()} at{" "}
+                          {new Date(quotation.created_at).toLocaleTimeString()}
+                        </span>
+                      </div>
+
+                      {quotation.status === "pending" && (
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              const response = prompt("Enter your response to the customer:")
+                              const price = prompt("Enter quoted price (optional):")
+                              if (response) {
+                                updateQuotationStatus(
+                                  quotation.id,
+                                  "quoted",
+                                  response,
+                                  price ? Number.parseFloat(price) : undefined,
+                                )
+                              }
+                            }}
+                            className="bg-blue-600 hover:bg-blue-700"
+                          >
+                            <Mail className="mr-1 h-3 w-3" />
+                            Send Quote
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => updateQuotationStatus(quotation.id, "rejected")}
+                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                          >
+                            <XCircle className="mr-1 h-3 w-3" />
+                            Reject
+                          </Button>
+                        </div>
+                      )}
+
+                      {quotation.admin_response && (
+                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-md">
+                          <h5 className="font-medium text-blue-800 dark:text-blue-200 mb-1">Admin Response</h5>
+                          <p className="text-sm text-blue-700 dark:text-blue-300">{quotation.admin_response}</p>
+                          {quotation.quoted_price && (
+                            <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mt-1">
+                              Quoted Price: ${quotation.quoted_price}
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </motion.div>
+                  ))}
+
+                  {quotations.length === 0 && (
+                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                      No quotation requests yet. Quotation requests will appear here when customers submit them.
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
         {/* User Traffic Tab */}
         {activeTab === "traffic" && (
           <motion.div initial="initial" animate="animate" variants={fadeInUp}>
@@ -745,58 +1057,85 @@ export default function AdminPage() {
               </Card>
               <Card>
                 <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium">Quotation Requests</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-teal-600 dark:text-green-400">{quotations.length}</div>
+                </CardContent>
+              </Card>
+              <Card>
+                <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium">User Inquiries</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="text-3xl font-bold text-teal-600 dark:text-green-400">{userInquiries.length}</div>
                 </CardContent>
               </Card>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">This Month</CardTitle>
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center">
+                    <BarChart3 className="mr-2 h-6 w-6" />
+                    Products by Category
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-teal-600 dark:text-green-400">
-                    {
-                      userInquiries.filter(
-                        (inquiry) => new Date(inquiry.created_at).getMonth() === new Date().getMonth(),
-                      ).length
-                    }
+                  <div className="space-y-4">
+                    {categories.map((category) => {
+                      const count = products.filter((product) => product.category === category).length
+                      const percentage = products.length > 0 ? (count / products.length) * 100 : 0
+                      return (
+                        <div key={category} className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span>{category}</span>
+                            <span>{count} products</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-teal-600 dark:bg-green-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-2xl flex items-center">
+                    <FileText className="mr-2 h-6 w-6" />
+                    Quotation Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {["pending", "quoted", "accepted", "rejected"].map((status) => {
+                      const count = quotations.filter((quotation) => quotation.status === status).length
+                      const percentage = quotations.length > 0 ? (count / quotations.length) * 100 : 0
+                      return (
+                        <div key={status} className="space-y-2">
+                          <div className="flex justify-between text-sm">
+                            <span className="capitalize">{status}</span>
+                            <span>{count} requests</span>
+                          </div>
+                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                            <div
+                              className="bg-teal-600 dark:bg-green-600 h-2 rounded-full transition-all duration-300"
+                              style={{ width: `${percentage}%` }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
                 </CardContent>
               </Card>
             </div>
-
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center">
-                  <BarChart3 className="mr-2 h-6 w-6" />
-                  Products by Category
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {categories.map((category) => {
-                    const count = products.filter((product) => product.category === category).length
-                    const percentage = products.length > 0 ? (count / products.length) * 100 : 0
-                    return (
-                      <div key={category} className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>{category}</span>
-                          <span>{count} products</span>
-                        </div>
-                        <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                          <div
-                            className="bg-teal-600 dark:bg-green-600 h-2 rounded-full transition-all duration-300"
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </CardContent>
-            </Card>
           </motion.div>
         )}
       </div>
