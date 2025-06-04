@@ -100,5 +100,4 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser to view the
 
 ## 📞 Support
 
-For any support or technical issues, please contact the development team or Bharat Hydraulics & Engineering Co. directly.
-
+For any support or technical issues, please contact the development team or Bharat Hydraulics & Engineering Co. directly..
