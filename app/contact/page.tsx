@@ -1,8 +1,6 @@
 "use client"
 
-import type React from "react"
-
-import { useState } from "react"
+import React, { useState, useRef } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -11,6 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react"
+import emailjs from "@emailjs/browser"
+import { useToast } from "@/hooks/use-toast"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -30,32 +30,79 @@ export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
-    company: "",
     phone: "",
+    company: "",
     subject: "",
     message: "",
   })
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formErrors, setFormErrors] = useState({
+    name: "",
+    email: "",
+    message: "",
+    subject: "",
+  })
+
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const { toast } = useToast()
+  const formRef = useRef<HTMLFormElement>(null)
+
+  const validateForm = () => {
+    const errors = { name: "", email: "", message: "", subject: "" }
+    const { name, email, message, subject } = formData
+
+    if (!name.trim()) errors.name = "Name is required"
+    if (!email.trim()) {
+      errors.email = "Email is required"
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = "Email is invalid"
+    }
+    if (!subject.trim()) errors.subject = "Subject is required"
+    if (!message.trim()) errors.message = "Message is required"
+
+    setFormErrors(errors)
+    return Object.values(errors).every((val) => val === "")
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // Handle form submission here
-    console.log("Form submitted:", formData)
-    alert("Thank you for your message! We will get back to you soon.")
-    setFormData({
-      name: "",
-      email: "",
-      company: "",
-      phone: "",
-      subject: "",
-      message: "",
-    })
+    if (!validateForm()) return
+    setIsSubmitting(true)
+
+    try {
+      await emailjs.sendForm(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        formRef.current!,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+      )
+
+      toast({
+        title: "Message Sent!",
+        description: "We'll get back to you shortly.",
+      })
+
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        company: "",
+        subject: "",
+        message: "",
+      })
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
+    setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
   return (
@@ -67,25 +114,18 @@ export default function ContactPage() {
             <Badge variant="secondary" className="bg-teal-100 text-teal-800 dark:bg-green-900 dark:text-green-100 mb-4">
               Contact Us
             </Badge>
-            <h1 className="text-4xl lg:text-5xl font-bold mb-6">
-              Get in
-              <span className="text-teal-600 dark:text-green-400"> Touch</span>
+            <h1 className="text-5xl font-bold mb-6">
+              Get in <span className="text-teal-600 dark:text-green-400">Touch</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Ready to discuss your PVC pipe solution needs? Our expert team is here to help you find the perfect
-              products for your project.
+              Reach out to us for all your PVC project and fitting needs. We're here to help.
             </p>
           </motion.div>
         </motion.div>
 
         <div className="grid lg:grid-cols-3 gap-12">
-          {/* Contact Information */}
-          <motion.div
-            initial="initial"
-            animate="animate"
-            variants={staggerContainer}
-            className="lg:col-span-1 space-y-6"
-          >
+          {/* Contact Info */}
+          <motion.div initial="initial" animate="animate" variants={staggerContainer} className="space-y-6">
             <motion.div variants={fadeInUp}>
               <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
             </motion.div>
@@ -94,25 +134,25 @@ export default function ContactPage() {
               {
                 icon: MapPin,
                 title: "Address",
-                content: "123 Industrial Avenue\nManufacturing District\nCity, State 12345",
+                content: "123 Industrial Area\nMIDC, Mumbai, MH 400001",
               },
               {
                 icon: Phone,
                 title: "Phone",
-                content: "+1 (555) 123-4567\n+1 (555) 987-6543",
+                content: "+91 98765 43210\n+91 87654 32109",
               },
               {
                 icon: Mail,
                 title: "Email",
-                content: "info@pvcprosolutions.com\nsales@pvcprosolutions.com",
+                content: "info@bharathydraulics.com\nsales@bharathydraulics.com",
               },
               {
                 icon: Clock,
                 title: "Business Hours",
-                content: "Monday - Friday: 8:00 AM - 6:00 PM\nSaturday: 9:00 AM - 4:00 PM\nSunday: Closed",
+                content: "Mon-Sat: 9:00 AM - 6:00 PM\nSunday: Closed",
               },
-            ].map((item, index) => (
-              <motion.div key={index} variants={fadeInUp}>
+            ].map((item, idx) => (
+              <motion.div key={idx} variants={fadeInUp}>
                 <Card>
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
@@ -135,94 +175,53 @@ export default function ContactPage() {
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl">Send us a Message</CardTitle>
-                <CardDescription>
-                  Fill out the form below and we'll get back to you as soon as possible.
-                </CardDescription>
+                <CardDescription>We usually respond within 24 hours.</CardDescription>
               </CardHeader>
               <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
-                      <Input
-                        id="name"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
-                        placeholder="Your full name"
-                      />
+                      <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
+                      {formErrors.name && <p className="text-red-600 text-sm">{formErrors.name}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address *</Label>
-                      <Input
-                        id="email"
-                        name="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        placeholder="your.email@company.com"
-                      />
+                      <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                      {formErrors.email && <p className="text-red-600 text-sm">{formErrors.email}</p>}
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="company">Company</Label>
-                      <Input
-                        id="company"
-                        name="company"
-                        value={formData.company}
-                        onChange={handleChange}
-                        placeholder="Your company name"
-                      />
+                      <Input id="company" name="company" value={formData.company} onChange={handleChange} />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        placeholder="+1 (555) 123-4567"
-                      />
+                      <Label htmlFor="phone">Phone</Label>
+                      <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} />
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="subject">Subject *</Label>
-                    <Input
-                      id="subject"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      required
-                      placeholder="What can we help you with?"
-                    />
+                    <Input id="subject" name="subject" value={formData.subject} onChange={handleChange} required />
+                    {formErrors.subject && <p className="text-red-600 text-sm">{formErrors.subject}</p>}
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="message">Message *</Label>
-                    <Textarea
-                      id="message"
-                      name="message"
-                      value={formData.message}
-                      onChange={handleChange}
-                      required
-                      rows={6}
-                      placeholder="Please provide details about your requirements, project specifications, or any questions you have..."
-                    />
+                    <Textarea id="message" name="message" rows={6} value={formData.message} onChange={handleChange} required />
+                    {formErrors.message && <p className="text-red-600 text-sm">{formErrors.message}</p>}
                   </div>
 
                   <Button
                     type="submit"
+                    disabled={isSubmitting}
                     className="w-full bg-teal-600 hover:bg-teal-700 dark:bg-green-600 dark:hover:bg-green-700"
                     size="lg"
                   >
-                    <Send className="mr-2 h-4 w-4" />
-                    Send Message
+                    {isSubmitting ? "Sending..." : (<><Send className="mr-2 h-4 w-4" /> Send Message</>)}
                   </Button>
                 </form>
               </CardContent>
@@ -241,11 +240,11 @@ export default function ContactPage() {
           <Card>
             <CardHeader>
               <CardTitle className="text-2xl">Find Us</CardTitle>
-              <CardDescription>Visit our manufacturing facility and showroom</CardDescription>
+              <CardDescription>Visit our facility and showroom in Mumbai</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500 dark:text-gray-400">Interactive Map Placeholder</p>
+                <p className="text-gray-500 dark:text-gray-400">Interactive Map Coming Soon</p>
               </div>
             </CardContent>
           </Card>

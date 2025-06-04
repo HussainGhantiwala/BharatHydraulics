@@ -152,8 +152,8 @@ export default function HomePage() {
             variants={staggerContainer}
             className="grid lg:grid-cols-2 gap-16 items-center"
           >
-            <motion.div variants={fadeInLeft} className="space-y-8">
-              <div className="space-y-6">
+            <motion.div variants={fadeInLeft} className="space-y-6">
+              <div className="space-y-7">
                 <motion.div variants={scaleIn}>
                   <motion.div whileHover={{ scale: 1.05, rotate: [0, -1, 1, 0] }} transition={{ duration: 0.3 }}>
                     <Badge
@@ -173,7 +173,7 @@ export default function HomePage() {
                     whileHover={{ scale: 1.02, textShadow: "0 0 8px rgba(20, 184, 166, 0.3)" }}
                     transition={{ duration: 0.2 }}
                   >
-                    Premium PVC
+                    Bharat Hydraulics 
                   </motion.span>
                   <motion.span
                     className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-400 dark:to-green-400 block"
@@ -183,7 +183,7 @@ export default function HomePage() {
                     }}
                     transition={{ duration: 0.3 }}
                   >
-                    Pipe Solutions
+                    & Engineering
                   </motion.span>
                 </motion.h1>
 
@@ -358,7 +358,7 @@ export default function HomePage() {
             className="text-center mb-20"
           >
             <motion.h2 variants={fadeInUp} className="text-4xl lg:text-5xl font-bold mb-6">
-              Why Choose PVC Pro Solutions?
+              Why Choose Bharat Hydraulics & Engineering?
             </motion.h2>
             <motion.p variants={fadeInUp} className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               We deliver exceptional quality and service that sets us apart in the industry
