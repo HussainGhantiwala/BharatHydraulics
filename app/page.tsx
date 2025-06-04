@@ -9,6 +9,7 @@ import { ArrowRight, Shield, Truck, Award, Users, Wrench, Factory } from "lucide
 import Link from "next/link"
 import Image from "next/image"
 import { BrandsCarousel } from "@/components/brands-carousel"
+import { FloatingParticles } from "@/components/floating-particles"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -45,13 +46,55 @@ const scaleIn = {
 
 const buttonHover = {
   scale: 1.05,
-  transition: { type: "spring", stiffness: 400, damping: 10 },
+  y: -2,
+  transition: {
+    type: "spring",
+    stiffness: 400,
+    damping: 10,
+    duration: 0.2,
+  },
+}
+
+const buttonTap = {
+  scale: 0.95,
+  y: 0,
 }
 
 const cardHover = {
-  y: -8,
-  scale: 1.02,
-  transition: { type: "spring", stiffness: 300, damping: 20 },
+  y: -12,
+  scale: 1.03,
+  rotateY: 5,
+  transition: {
+    type: "spring",
+    stiffness: 300,
+    damping: 20,
+    duration: 0.3,
+  },
+}
+
+const imageHover = {
+  scale: 1.05,
+  rotateY: 8,
+  rotateX: 2,
+  transition: {
+    type: "spring",
+    stiffness: 300,
+    damping: 20,
+    duration: 0.4,
+  },
+}
+
+const glowEffect = {
+  boxShadow: [
+    "0 0 20px rgba(20, 184, 166, 0.3)",
+    "0 0 40px rgba(20, 184, 166, 0.5)",
+    "0 0 20px rgba(20, 184, 166, 0.3)",
+  ],
+  transition: {
+    duration: 2,
+    repeat: Number.POSITIVE_INFINITY,
+    ease: "easeInOut",
+  },
 }
 
 function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number }) {
@@ -83,66 +126,23 @@ function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number
 export default function HomePage() {
   return (
     <div className="min-h-screen">
-      {/* Hero Section with Enhanced Background */}
+      {/* Hero Section with Gradient Background */}
       <section className="relative overflow-hidden min-h-screen flex items-center">
-        {/* Enhanced Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-teal-50 via-blue-50 to-cyan-50 dark:from-gray-900 dark:via-green-950 dark:to-emerald-950">
-          {/* Floating Geometric Shapes with Better Animation */}
-          <motion.div
-            animate={{
-              rotate: 360,
-              scale: [1, 1.3, 1],
-              opacity: [0.3, 0.6, 0.3],
-            }}
-            transition={{
-              duration: 25,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-            className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-teal-200/40 to-blue-200/40 dark:from-green-400/30 dark:to-emerald-400/30 rounded-full blur-xl"
-          />
-          <motion.div
-            animate={{
-              rotate: -360,
-              scale: [1.2, 1, 1.2],
-              opacity: [0.4, 0.7, 0.4],
-            }}
-            transition={{
-              duration: 30,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "linear",
-            }}
-            className="absolute top-40 right-20 w-48 h-48 bg-gradient-to-r from-blue-200/40 to-cyan-200/40 dark:from-emerald-400/30 dark:to-green-400/30 rounded-full blur-xl"
-          />
-          <motion.div
-            animate={{
-              y: [-20, 30, -20],
-              rotate: [0, 180, 360],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-            className="absolute bottom-20 left-1/4 w-24 h-24 bg-gradient-to-r from-cyan-200/50 to-teal-200/50 dark:from-green-300/40 dark:to-emerald-300/40 rounded-lg blur-lg"
-          />
-          <motion.div
-            animate={{
-              x: [-30, 40, -30],
-              scale: [1, 1.6, 1],
-              opacity: [0.2, 0.5, 0.2],
-            }}
-            transition={{
-              duration: 22,
-              repeat: Number.POSITIVE_INFINITY,
-              ease: "easeInOut",
-            }}
-            className="absolute top-1/3 right-1/3 w-40 h-40 bg-gradient-to-r from-teal-300/30 to-blue-300/30 dark:from-emerald-300/25 dark:to-green-300/25 rounded-full blur-2xl"
-          />
+        {/* Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-white via-teal-50 to-green-100 dark:from-gray-900 dark:via-teal-950 dark:to-green-950">
+          {/* Floating Pipes */}
+          <FloatingParticles />
 
-          {/* Enhanced Grid Pattern */}
-          <div className="absolute inset-0 pattern-light dark:pattern-dark opacity-30" />
+          {/* Subtle overlay pattern */}
+          <div className="absolute inset-0 opacity-30">
+            <div
+              className="absolute inset-0"
+              style={{
+                backgroundImage: `radial-gradient(circle at 25% 25%, rgba(20, 184, 166, 0.1) 0%, transparent 50%),
+                               radial-gradient(circle at 75% 75%, rgba(34, 197, 94, 0.1) 0%, transparent 50%)`,
+              }}
+            />
+          </div>
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
@@ -155,22 +155,33 @@ export default function HomePage() {
             <motion.div variants={fadeInLeft} className="space-y-8">
               <div className="space-y-6">
                 <motion.div variants={scaleIn}>
-                  <Badge
-                    variant="secondary"
-                    className="bg-teal-100 text-teal-800 dark:bg-green-900 dark:text-green-100 px-6 py-3 text-base font-semibold rounded-full"
-                  >
-                    ✨ Industry Leading Solutions
-                  </Badge>
+                  <motion.div whileHover={{ scale: 1.05, rotate: [0, -1, 1, 0] }} transition={{ duration: 0.3 }}>
+                    <Badge
+                      variant="secondary"
+                      className="bg-teal-100 text-teal-800 dark:bg-green-900 dark:text-green-100 px-6 py-3 text-base font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      ✨ Industry Leading Solutions
+                    </Badge>
+                  </motion.div>
                 </motion.div>
 
                 <motion.h1
                   className="text-5xl lg:text-7xl font-bold text-gray-900 dark:text-white leading-tight"
                   variants={fadeInUp}
                 >
-                  Premium PVC
                   <motion.span
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-600 dark:from-green-400 dark:to-emerald-400 block"
+                    whileHover={{ scale: 1.02, textShadow: "0 0 8px rgba(20, 184, 166, 0.3)" }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    Premium PVC
+                  </motion.span>
+                  <motion.span
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-400 dark:to-green-400 block"
                     variants={fadeInUp}
+                    whileHover={{
+                      scale: 1.02,
+                    }}
+                    transition={{ duration: 0.3 }}
                   >
                     Pipe Solutions
                   </motion.span>
@@ -179,6 +190,8 @@ export default function HomePage() {
                 <motion.p
                   className="text-xl lg:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed"
                   variants={fadeInUp}
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ duration: 0.2 }}
                 >
                   Professional supplier of high-quality PVC pipe clamps, flanges, and fittings for industrial and
                   commercial applications worldwide.
@@ -186,23 +199,36 @@ export default function HomePage() {
               </div>
 
               <motion.div className="flex flex-col sm:flex-row gap-6" variants={fadeInUp}>
-                <motion.div whileHover={buttonHover} whileTap={{ scale: 0.95 }}>
+                <motion.div whileHover={buttonHover} whileTap={buttonTap} className="group">
                   <Button
                     asChild
                     size="lg"
-                    className="bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 dark:from-green-600 dark:to-emerald-600 dark:hover:from-green-700 dark:hover:to-emerald-700 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 rounded-full"
+                    className="bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 dark:from-teal-600 dark:to-green-600 dark:hover:from-teal-700 dark:hover:to-green-700 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-2xl transition-all duration-300 rounded-full relative overflow-hidden"
                   >
-                    <Link href="/catalogue">
-                      View Catalogue <ArrowRight className="ml-2 h-5 w-5" />
+                    <Link href="/catalogue" className="relative z-10 flex items-center">
+                      View Catalogue
+                      <motion.div
+                        className="ml-2"
+                        animate={{ x: [0, 4, 0] }}
+                        transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                      >
+                        <ArrowRight className="h-5 w-5" />
+                      </motion.div>
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+                        initial={{ x: "-100%" }}
+                        whileHover={{ x: "100%" }}
+                        transition={{ duration: 0.6 }}
+                      />
                     </Link>
                   </Button>
                 </motion.div>
-                <motion.div whileHover={buttonHover} whileTap={{ scale: 0.95 }}>
+                <motion.div whileHover={buttonHover} whileTap={buttonTap}>
                   <Button
                     asChild
                     variant="outline"
                     size="lg"
-                    className="px-8 py-4 text-lg font-semibold border-2 border-teal-200 dark:border-green-700 hover:bg-teal-50 dark:hover:bg-green-950 rounded-full backdrop-blur-sm"
+                    className="px-8 py-4 text-lg font-semibold border-2 border-teal-200 dark:border-green-700 hover:bg-teal-50 dark:hover:bg-green-950 rounded-full backdrop-blur-sm hover:border-teal-400 dark:hover:border-green-500 transition-all duration-300 hover:shadow-lg"
                   >
                     <Link href="/contact">Contact Us</Link>
                   </Button>
@@ -215,12 +241,23 @@ export default function HomePage() {
                   { end: 15, label: "Years Experience", suffix: "+" },
                   { end: 1000, label: "Happy Clients", suffix: "+" },
                 ].map((stat, index) => (
-                  <motion.div key={index} variants={scaleIn} className="text-center">
-                    <div className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-blue-600 dark:from-green-400 dark:to-emerald-400">
+                  <motion.div
+                    key={index}
+                    variants={scaleIn}
+                    className="text-center group cursor-pointer"
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <motion.div
+                      className="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-400 dark:to-green-400"
+                      whileHover={glowEffect}
+                    >
                       <AnimatedCounter end={stat.end} />
                       {stat.suffix}
+                    </motion.div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-2 group-hover:text-teal-600 dark:group-hover:text-green-400 transition-colors duration-200">
+                      {stat.label}
                     </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400 font-medium mt-2">{stat.label}</div>
                   </motion.div>
                 ))}
               </motion.div>
@@ -228,26 +265,73 @@ export default function HomePage() {
 
             <motion.div variants={fadeInRight} className="relative">
               <motion.div
-                className="relative z-10"
-                whileHover={{ scale: 1.02, rotateY: 5 }}
+                className="relative z-10 group"
+                whileHover={imageHover}
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
-                <div className="relative overflow-hidden rounded-3xl shadow-2xl">
-                  <Image
-                    src="/placeholder.svg?height=600&width=600"
-                    alt="PVC Pipe Clamps and Flanges"
-                    width={600}
-                    height={600}
-                    className="w-full h-auto"
+                <div className="relative overflow-hidden rounded-3xl shadow-2xl group-hover:shadow-3xl transition-shadow duration-500">
+                  <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.6 }}>
+                    <Image
+                      src="/placeholder.svg?height=600&width=600"
+                      alt="PVC Pipe Clamps and Flanges"
+                      width={600}
+                      height={600}
+                      className="w-full h-auto"
+                    />
+                  </motion.div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent group-hover:from-black/10 transition-all duration-500" />
+
+                  {/* Floating elements around the image */}
+                  <motion.div
+                    className="absolute -top-4 -right-4 w-8 h-8 bg-teal-500 rounded-full opacity-60"
+                    animate={{
+                      y: [0, -10, 0],
+                      scale: [1, 1.2, 1],
+                    }}
+                    transition={{
+                      duration: 3,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "easeInOut",
+                    }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  <motion.div
+                    className="absolute -bottom-6 -left-6 w-6 h-6 bg-green-500 rounded-full opacity-50"
+                    animate={{
+                      y: [0, 8, 0],
+                      x: [0, 4, 0],
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                      duration: 4,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "easeInOut",
+                      delay: 1,
+                    }}
+                  />
                 </div>
               </motion.div>
+
+              {/* Enhanced background decoration */}
               <motion.div
-                className="absolute inset-0 bg-gradient-to-tr from-teal-400/20 to-blue-400/20 dark:from-green-400/20 dark:to-emerald-400/20 rounded-3xl transform rotate-6 -z-10"
+                className="absolute inset-0 bg-gradient-to-tr from-teal-400/20 to-green-400/20 dark:from-teal-400/20 dark:to-green-400/20 rounded-3xl transform rotate-6 -z-10"
                 animate={{
                   rotate: [6, 8, 6],
                   scale: [1, 1.02, 1],
+                  opacity: [0.2, 0.3, 0.2],
+                }}
+                transition={{
+                  duration: 8,
+                  repeat: Number.POSITIVE_INFINITY,
+                  ease: "easeInOut",
+                }}
+              />
+
+              {/* Additional decorative elements */}
+              <motion.div
+                className="absolute -top-8 -left-8 w-16 h-16 bg-gradient-to-br from-teal-400/30 to-green-400/30 rounded-full blur-xl -z-20"
+                animate={{
+                  scale: [1, 1.5, 1],
+                  opacity: [0.3, 0.6, 0.3],
                 }}
                 transition={{
                   duration: 6,
@@ -294,54 +378,70 @@ export default function HomePage() {
                 title: "Premium Quality",
                 description: "All products meet international standards with rigorous quality control",
                 color: "from-blue-500 to-cyan-500",
+                bgColor: "rgba(59, 130, 246, 0.1)",
               },
               {
                 icon: Truck,
                 title: "Fast Delivery",
                 description: "Quick and reliable shipping to get your projects moving",
                 color: "from-green-500 to-teal-500",
+                bgColor: "rgba(34, 197, 94, 0.1)",
               },
               {
                 icon: Award,
                 title: "Industry Certified",
                 description: "ISO certified with proven track record in the industry",
                 color: "from-purple-500 to-pink-500",
+                bgColor: "rgba(168, 85, 247, 0.1)",
               },
               {
                 icon: Users,
                 title: "Expert Support",
                 description: "Dedicated technical support team to assist with your needs",
                 color: "from-orange-500 to-red-500",
+                bgColor: "rgba(249, 115, 22, 0.1)",
               },
               {
                 icon: Wrench,
                 title: "Custom Solutions",
                 description: "Tailored products and solutions for specific requirements",
                 color: "from-indigo-500 to-blue-500",
+                bgColor: "rgba(99, 102, 241, 0.1)",
               },
               {
                 icon: Factory,
                 title: "Manufacturing Excellence",
                 description: "State-of-the-art manufacturing facilities and processes",
                 color: "from-emerald-500 to-green-500",
+                bgColor: "rgba(16, 185, 129, 0.1)",
               },
             ].map((feature, index) => (
               <motion.div key={index} variants={fadeInUp}>
-                <motion.div whileHover={cardHover} className="h-full">
+                <motion.div whileHover={cardHover} className="h-full group cursor-pointer">
                   <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 shadow-lg group overflow-hidden relative">
-                    <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity duration-500" />
-                    <CardHeader className="text-center pb-4">
+                    <motion.div
+                      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                      style={{
+                        backgroundColor: feature.bgColor,
+                      }}
+                    />
+                    <CardHeader className="text-center pb-4 relative z-10">
                       <motion.div
-                        className={`mx-auto w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 shadow-lg`}
-                        whileHover={{ rotate: 360, scale: 1.1 }}
+                        className={`mx-auto w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:shadow-xl`}
+                        whileHover={{
+                          rotate: [0, -10, 10, 0],
+                          scale: 1.1,
+                        }}
                         transition={{ duration: 0.6 }}
                       >
                         <feature.icon className="h-8 w-8 text-white" />
                       </motion.div>
-                      <CardTitle className="text-xl font-bold">{feature.title}</CardTitle>
+                      <CardTitle className="text-xl font-bold group-hover:text-teal-600 dark:group-hover:text-green-400 transition-colors duration-300">
+                        {feature.title}
+                      </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <CardDescription className="text-center text-base leading-relaxed">
+                    <CardContent className="relative z-10">
+                      <CardDescription className="text-center text-base leading-relaxed group-hover:text-gray-700 dark:group-hover:text-gray-200 transition-colors duration-300">
                         {feature.description}
                       </CardDescription>
                     </CardContent>
@@ -354,7 +454,7 @@ export default function HomePage() {
       </section>
 
       {/* Enhanced CTA Section */}
-      <section className="py-24 bg-gradient-to-r from-teal-600 via-blue-600 to-cyan-600 dark:from-green-800 dark:via-emerald-800 dark:to-teal-800 relative overflow-hidden">
+      <section className="py-24 bg-gradient-to-r from-teal-600 via-teal-700 to-green-600 dark:from-teal-800 dark:via-teal-900 dark:to-green-800 relative overflow-hidden">
         <motion.div
           className="absolute inset-0"
           animate={{
@@ -374,27 +474,37 @@ export default function HomePage() {
             variants={fadeInUp}
             className="max-w-4xl mx-auto"
           >
-            <h2 className="text-4xl lg:text-6xl font-bold text-white mb-8">Ready to Get Started?</h2>
-            <p className="text-xl lg:text-2xl text-teal-100 dark:text-green-100 mb-12 leading-relaxed">
+            <motion.h2
+              className="text-4xl lg:text-6xl font-bold text-white mb-8"
+              whileHover={{ scale: 1.02, textShadow: "0 0 20px rgba(255,255,255,0.3)" }}
+              transition={{ duration: 0.3 }}
+            >
+              Ready to Get Started?
+            </motion.h2>
+            <motion.p
+              className="text-xl lg:text-2xl text-teal-100 dark:text-green-100 mb-12 leading-relaxed"
+              whileHover={{ scale: 1.01 }}
+              transition={{ duration: 0.2 }}
+            >
               Explore our comprehensive catalogue or get in touch with our experts for personalized solutions.
-            </p>
+            </motion.p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <motion.div whileHover={buttonHover} whileTap={{ scale: 0.95 }}>
+              <motion.div whileHover={buttonHover} whileTap={buttonTap}>
                 <Button
                   asChild
                   size="lg"
                   variant="secondary"
-                  className="px-10 py-4 text-lg font-semibold rounded-full shadow-xl"
+                  className="px-10 py-4 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
                 >
                   <Link href="/catalogue">Browse Catalogue</Link>
                 </Button>
               </motion.div>
-              <motion.div whileHover={buttonHover} whileTap={{ scale: 0.95 }}>
+              <motion.div whileHover={buttonHover} whileTap={buttonTap}>
                 <Button
                   asChild
                   size="lg"
                   variant="outline"
-                  className="border-2 border-white text-white hover:bg-white hover:text-teal-600 dark:hover:text-green-800 px-10 py-4 text-lg font-semibold rounded-full backdrop-blur-sm"
+                  className="border-2 border-white text-white hover:bg-white hover:text-teal-600 dark:hover:text-green-800 px-10 py-4 text-lg font-semibold rounded-full backdrop-blur-sm transition-all duration-300 hover:shadow-xl"
                 >
                   <Link href="/contact">Get Quote</Link>
                 </Button>
@@ -406,3 +516,4 @@ export default function HomePage() {
     </div>
   )
 }
+  
