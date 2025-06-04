@@ -99,12 +99,81 @@ export default function ContactPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* ...Hero Section, Contact Info Cards... */}
 
+      <section className="py-20 bg-gradient-to-r from-teal-600 to-teal-800 dark:from-green-600 dark:to-green-800 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-5xl font-bold mb-6">Contact Us</h1>
+          <p className="text-xl max-w-2xl mx-auto">
+            Get in touch with our experts for all your PVC pipe and fitting needs
+          </p>
+        </div>
+      </section>
+
       <section className="py-20">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-3 gap-12">
-            {/* Contact Information (left column) */}
-            {/* ...same as original... */}
+            {/* Contact Information */}
+            <div className="space-y-8">
+              <div>
+                <h2 className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">Get in Touch</h2>
+                <p className="text-gray-600 dark:text-gray-400 text-lg">
+                  Ready to discuss your project? Our team is here to help you find the perfect PVC solutions.
+                </p>
+              </div>
 
+              <div className="space-y-6">
+                <Card className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <Phone className="h-6 w-6 text-teal-600 dark:text-green-400 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Phone</h3>
+                      <p className="text-gray-600 dark:text-gray-400">+91 98765 43210</p>
+                      <p className="text-gray-600 dark:text-gray-400">+91 87654 32109</p>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <Mail className="h-6 w-6 text-teal-600 dark:text-green-400 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Email</h3>
+                      <p className="text-gray-600 dark:text-gray-400">info@bharathydraulics.com</p>
+                      <p className="text-gray-600 dark:text-gray-400">sales@bharathydraulics.com</p>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <MapPin className="h-6 w-6 text-teal-600 dark:text-green-400 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Address</h3>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        123 Industrial Area,
+                        <br />
+                        Sector 15, MIDC,
+                        <br />
+                        Mumbai, Maharashtra 400001
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+
+                <Card className="p-6">
+                  <div className="flex items-start space-x-4">
+                    <Clock className="h-6 w-6 text-teal-600 dark:text-green-400 mt-1" />
+                    <div>
+                      <h3 className="font-semibold text-gray-900 dark:text-white mb-1">Business Hours</h3>
+                      <p className="text-gray-600 dark:text-gray-400">
+                        Monday - Saturday: 9:00 AM - 6:00 PM
+                        <br />
+                        Sunday: Closed
+                      </p>
+                    </div>
+                  </div>
+                </Card>
+              </div>
+            </div>
             {/* Contact Form */}
             <div className="lg:col-span-2">
               <Card>
@@ -201,6 +270,18 @@ export default function ContactPage() {
       </section>
 
       {/* ...Map Section... */}
+      <section className="py-20 bg-white dark:bg-gray-800">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4 text-gray-900 dark:text-white">Visit Our Location</h2>
+            <p className="text-gray-600 dark:text-gray-400">Find us at our main facility in Mumbai</p>
+          </div>
+
+          <div className="bg-gray-200 dark:bg-gray-700 h-96 rounded-lg flex items-center justify-center">
+            <p className="text-gray-600 dark:text-gray-400 text-lg">Interactive Map Coming Soon</p>
+          </div>
+        </div>
+        </section>
     </div>
   )
 }
