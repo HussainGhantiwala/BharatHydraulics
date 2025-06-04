@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { useToast } from "@/hooks/use-toast"
 import { supabase } from "@/lib/supabase"
 import { Mail, Eye, Clock, CheckCircle, Phone, Building, Loader2 } from "lucide-react"
+import emailjs from '@emailjs/browser'
 
 interface QuotationRequest {
   id: string
@@ -33,6 +34,12 @@ export function QuotationRequests() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSending, setIsSending] = useState(false)
   const { toast } = useToast()
+
+  // Initialize EmailJS
+  useEffect(() => {
+    // Replace with your EmailJS public key
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC1_KEY || "YOUR_PUBLIC_KEY")
+  }, [])
 
   const fetchQuotationRequests = async () => {
     try {
@@ -84,6 +91,12 @@ export function QuotationRequests() {
     }
   }
 
+  const formatItemsForEmail = (items: QuotationRequest['items']) => {
+    return items.map((item, index) => 
+      `${index + 1}. ${item.product} (Quantity: ${item.quantity})${item.specifications ? `\n   Specifications: ${item.specifications}` : ''}`
+    ).join('\n\n')
+  }
+
   const sendQuotation = async () => {
     if (!selectedRequest || !quotationText.trim()) {
       toast({
@@ -97,30 +110,87 @@ export function QuotationRequests() {
     setIsSending(true)
 
     try {
-      // Update request status in Supabase
-      const { error } = await supabase
-        .from("quotation_requests")
-        .update({ status: "quoted" })
-        .eq("id", selectedRequest.id)
+      // Prepare email template parameters
+      const templateParams = {
+        // Customer details (TO)
+        to_name: selectedRequest.customer_name,
+        to_email: selectedRequest.email, // This is where the email will be sent
+        
+        // Email content
+        customer_name: selectedRequest.customer_name,
+        customer_email: selectedRequest.email,
+        customer_phone: selectedRequest.phone,
+        customer_company: selectedRequest.company,
+        requested_items: formatItemsForEmail(selectedRequest.items),
+        project_details: selectedRequest.project_details || 'No additional project details provided',
+        quotation_details: quotationText,
+        request_date: new Date(selectedRequest.created_at).toLocaleDateString(),
+        quotation_date: new Date().toLocaleDateString(),
+        
+        // Your company details (FROM)
+        from_name: process.env.NEXT_PUBLIC_COMPANY_NAME || "Your Company Name",
+        company_email: process.env.NEXT_PUBLIC_COMPANY_EMAIL || "your-email@company.com",
+        company_phone: process.env.NEXT_PUBLIC_COMPANY_PHONE || "Your Phone Number",
+        company_address: process.env.NEXT_PUBLIC_COMPANY_ADDRESS || "Your Company Address",
+      }
 
-      if (error) throw error
-
-      // Update local state
-      setRequests((prev) =>
-        prev.map((req) => (req.id === selectedRequest.id ? { ...req, status: "quoted" as const } : req)),
+      // Send email using EmailJS
+      console.log("Sending email with params:", {
+        serviceId: process.env.NEXT_PUBLIC_EMAILJS_SERVICE1_ID,
+        templateId: process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE1_ID,
+        to_email: templateParams.to_email
+      })
+      
+      const emailResponse = await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE1_ID || "YOUR_SERVICE_ID",
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE1_ID || "YOUR_TEMPLATE_ID",
+        templateParams
       )
 
-      toast({
-        title: "Quotation Sent",
-        description: `Quotation sent to ${selectedRequest.email}`,
-      })
+      console.log("Email response:", emailResponse)
 
-      setSelectedRequest(null)
-      setQuotationText("")
+      if (emailResponse.status === 200) {
+        // Update request status in Supabase only after successful email send
+        const { error } = await supabase
+          .from("quotation_requests")
+          .update({ 
+            status: "quoted"
+          })
+          .eq("id", selectedRequest.id)
+
+        if (error) throw error
+
+        // Update local state
+        setRequests((prev) =>
+          prev.map((req) => (req.id === selectedRequest.id ? { ...req, status: "quoted" as const } : req)),
+        )
+
+        toast({
+          title: "Quotation Sent Successfully!",
+          description: `Quotation has been sent to ${selectedRequest.email}`,
+        })
+
+        setSelectedRequest(null)
+        setQuotationText("")
+      } else {
+        throw new Error("Failed to send email")
+      }
     } catch (error: any) {
+      console.error("Email sending error:", error)
+      
+      let errorMessage = "Failed to send quotation"
+      
+      if (error.text) {
+        errorMessage = error.text
+      } else if (error.message) {
+        errorMessage = error.message
+      } else if (typeof error === 'string') {
+        errorMessage = error
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to send quotation: " + error.message,
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -322,7 +392,7 @@ export function QuotationRequests() {
                   {isSending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Sending...
+                      Sending Email...
                     </>
                   ) : (
                     <>
