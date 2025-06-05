@@ -78,12 +78,12 @@ const FormSection = ({
     transition={{ delay, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
     className="w-full"
   >
-    <div className="bg-white rounded-2xl p-8 border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300">
+    <div className="bg-white rounded-2xl p-8 border border-teal-100 shadow-sm hover:shadow-lg transition-all duration-300">
       <div className="flex items-center space-x-4 mb-6">
-        <div className="w-12 h-12 bg-gradient-to-br from-teal-500 to-green-500 rounded-xl flex items-center justify-center shadow-md">
+        <div className="w-12 h-12 bg-teal-600 rounded-xl flex items-center justify-center shadow-md">
           <Icon className="h-6 w-6 text-white" />
         </div>
-        <h3 className="text-xl font-bold text-gray-900">{title}</h3>
+        <h3 className="text-xl font-bold text-teal-900">{title}</h3>
       </div>
       {children}
     </div>
@@ -107,7 +107,7 @@ const AnimatedInput = ({
   >
     <div className="relative">
       {Icon && (
-        <Icon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 z-10" />
+        <Icon className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-teal-500 z-10" />
       )}
       {children}
     </div>
@@ -216,7 +216,7 @@ export function QuotationModal({
   if (isSuccess) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto border-0 shadow-2xl bg-gray-50 p-0">
+        <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto border-0 shadow-2xl bg-white p-0">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -226,7 +226,7 @@ export function QuotationModal({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: "spring", stiffness: 150 }}
-              className="w-24 h-24 bg-gradient-to-br from-teal-500 to-green-500 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg"
+              className="w-24 h-24 bg-teal-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg"
             >
               <CheckCircle className="h-12 w-12 text-white" />
             </motion.div>
@@ -234,7 +234,7 @@ export function QuotationModal({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-3xl font-bold text-gray-900 mb-4"
+              className="text-3xl font-bold text-teal-900 mb-4"
             >
               Request Submitted!
             </motion.h3>
@@ -242,7 +242,7 @@ export function QuotationModal({
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="text-lg text-gray-600 leading-relaxed"
+              className="text-lg text-teal-600 leading-relaxed"
             >
               Thank you for your interest! We'll review your requirements and
               get back to you with a competitive quote within 24 hours.
@@ -257,7 +257,7 @@ export function QuotationModal({
     <AnimatePresence>
       {isOpen && (
         <Dialog open={isOpen} onOpenChange={onClose}>
-          <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto border-0 shadow-2xl bg-gray-50 p-0">
+          <DialogContent className="sm:max-w-3xl max-h-[90vh] overflow-y-auto border-0 shadow-2xl bg-white p-0">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -266,7 +266,7 @@ export function QuotationModal({
               className="w-full"
             >
               {/* Header */}
-              <div className="bg-gradient-to-r from-teal-600 to-green-600 p-8 relative overflow-hidden">
+              <div className="bg-teal-600 p-8 relative overflow-hidden">
                 {/* Decorative elements */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
                 <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full translate-y-24 -translate-x-24"></div>
@@ -281,7 +281,7 @@ export function QuotationModal({
                         transition={{ delay: 0.1 }}
                         className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg"
                       >
-                        <Building2 className="h-8 w-8 text-teal-600" />
+                        <Building2 className="h-8 w-8 text-teal-500" />
                         {/* Replace the Building2 icon with your company logo:
                         <img src="/path-to-your-logo.png" alt="Company Logo" className="w-12 h-12 object-contain" />
                         */}
@@ -300,7 +300,7 @@ export function QuotationModal({
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.3 }}
-                          className="text-xl text-teal-100"
+                          className="text-xl text-white"
                         >
                           Get personalized pricing for{" "}
                           <span className="font-semibold text-white">
@@ -314,7 +314,7 @@ export function QuotationModal({
                       variant="ghost"
                       size="sm"
                       onClick={onClose}
-                      className="text-white/80 hover:text-white hover:bg-white/10 rounded-full w-12 h-12 p-0 transition-all duration-200"
+                      className="text-white hover:bg-white/10 rounded-full w-12 h-12 p-0 transition-all duration-200"
                     >
                       <X className="h-6 w-6" />
                     </Button>
@@ -326,7 +326,7 @@ export function QuotationModal({
                     transition={{ delay: 0.4 }}
                     className="bg-white/10 backdrop-blur-sm rounded-xl p-4"
                   >
-                    <p className="text-white/90 text-sm leading-relaxed">
+                    <p className="text-white text-sm leading-relaxed">
                       Fill out the form below with your requirements, and our
                       team will provide you with a detailed, competitive quote
                       tailored to your specific needs.
@@ -336,7 +336,7 @@ export function QuotationModal({
               </div>
 
               {/* Form Content */}
-              <div className="p-8">
+              <div className="p-8 bg-white">
                 {submitError && (
                   <motion.div
                     initial={{ opacity: 0, y: -10, scale: 0.95 }}
@@ -355,7 +355,7 @@ export function QuotationModal({
                         <div className="space-y-3">
                           <Label
                             htmlFor="customerName"
-                            className="text-sm font-semibold text-gray-700 block"
+                            className="text-sm font-semibold text-teal-900 block"
                           >
                             Full Name *
                           </Label>
@@ -366,7 +366,7 @@ export function QuotationModal({
                             onChange={handleChange}
                             required
                             placeholder="Enter your full name"
-                            className="pl-12 h-14 border-gray-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
+                            className="pl-12 h-14 border-teal-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
                           />
                         </div>
                       </AnimatedInput>
@@ -375,7 +375,7 @@ export function QuotationModal({
                         <div className="space-y-3">
                           <Label
                             htmlFor="customerEmail"
-                            className="text-sm font-semibold text-gray-700 block"
+                            className="text-sm font-semibold text-teal-900 block"
                           >
                             Email Address *
                           </Label>
@@ -387,7 +387,7 @@ export function QuotationModal({
                             onChange={handleChange}
                             required
                             placeholder="your.email@company.com"
-                            className="pl-12 h-14 border-gray-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
+                            className="pl-12 h-14 border-teal-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
                           />
                         </div>
                       </AnimatedInput>
@@ -396,7 +396,7 @@ export function QuotationModal({
                         <div className="space-y-3">
                           <Label
                             htmlFor="customerPhone"
-                            className="text-sm font-semibold text-gray-700 block"
+                            className="text-sm font-semibold text-teal-900 block"
                           >
                             Phone Number
                           </Label>
@@ -407,7 +407,7 @@ export function QuotationModal({
                             value={formData.customerPhone}
                             onChange={handleChange}
                             placeholder="+1 (555) 123-4567"
-                            className="pl-12 h-14 border-gray-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
+                            className="pl-12 h-14 border-teal-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
                           />
                         </div>
                       </AnimatedInput>
@@ -416,7 +416,7 @@ export function QuotationModal({
                         <div className="space-y-3">
                           <Label
                             htmlFor="company"
-                            className="text-sm font-semibold text-gray-700 block"
+                            className="text-sm font-semibold text-teal-900 block"
                           >
                             Company
                           </Label>
@@ -426,7 +426,7 @@ export function QuotationModal({
                             value={formData.company}
                             onChange={handleChange}
                             placeholder="Your company name"
-                            className="pl-12 h-14 border-gray-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
+                            className="pl-12 h-14 border-teal-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
                           />
                         </div>
                       </AnimatedInput>
@@ -444,7 +444,7 @@ export function QuotationModal({
                         <div className="space-y-3">
                           <Label
                             htmlFor="quantity"
-                            className="text-sm font-semibold text-gray-700 block"
+                            className="text-sm font-semibold text-teal-900 block"
                           >
                             Quantity *
                           </Label>
@@ -455,7 +455,7 @@ export function QuotationModal({
                             onChange={handleChange}
                             required
                             placeholder="e.g., 100 units"
-                            className="pl-12 h-14 border-gray-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
+                            className="pl-12 h-14 border-teal-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white transition-all duration-200 text-base"
                           />
                         </div>
                       </AnimatedInput>
@@ -464,7 +464,9 @@ export function QuotationModal({
                         <div className="space-y-3">
                           <Label
                             htmlFor="preferredSize"
-                            className="text-sm font-semibold text-gray-700 block"
+                            className="text Facet: AI
+
+                            text-sm font-semibold text-teal-900 block"
                           >
                             Preferred Size *
                           </Label>
@@ -474,10 +476,10 @@ export function QuotationModal({
                               handleSelectChange("preferredSize", value)
                             }
                           >
-                            <SelectTrigger className="h-14 border-gray-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white text-base">
+                            <SelectTrigger className="h-14 border-teal-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white text-base">
                               <SelectValue placeholder="Select size" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl border-gray-200 bg-white shadow-lg">
+                            <SelectContent className="rounded-xl border-teal-200 bg-white shadow-lg">
                               <SelectItem value="1/2 inch">1/2"</SelectItem>
                               <SelectItem value="3/4 inch">3/4"</SelectItem>
                               <SelectItem value="1 inch">1"</SelectItem>
@@ -501,7 +503,7 @@ export function QuotationModal({
                         <div className="space-y-3">
                           <Label
                             htmlFor="preferredMaterial"
-                            className="text-sm font-semibold text-gray-700 block"
+                            className="text-sm font-semibold text-teal-900 block"
                           >
                             Preferred Material *
                           </Label>
@@ -511,10 +513,10 @@ export function QuotationModal({
                               handleSelectChange("preferredMaterial", value)
                             }
                           >
-                            <SelectTrigger className="h-14 border-gray-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white text-base">
+                            <SelectTrigger className="h-14 border-teal-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white text-base">
                               <SelectValue placeholder="Select material" />
                             </SelectTrigger>
-                            <SelectContent className="rounded-xl border-gray-200 bg-white shadow-lg">
+                            <SelectContent className="rounded-xl border-teal-200 bg-white shadow-lg">
                               <SelectItem value="PVC">PVC</SelectItem>
                               <SelectItem value="CPVC">CPVC</SelectItem>
                               <SelectItem value="ABS">ABS</SelectItem>
@@ -544,7 +546,7 @@ export function QuotationModal({
                       <div className="space-y-3">
                         <Label
                           htmlFor="additionalRequirements"
-                          className="text-sm font-semibold text-gray-700 block"
+                          className="text-sm font-semibold text-teal-900 block"
                         >
                           Special Requirements & Notes
                         </Label>
@@ -555,7 +557,7 @@ export function QuotationModal({
                           onChange={handleChange}
                           rows={5}
                           placeholder="Tell us about any custom specifications, delivery timeline, special features, or other details that will help us provide the perfect quote..."
-                          className="border-gray-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white resize-none transition-all duration-200 text-base p-4"
+                          className="border-teal-200 focus:border-teal-500 focus:ring-teal-500 rounded-xl bg-white resize-none transition-all duration-200 text-base p-4"
                         />
                       </div>
                     </AnimatedInput>
@@ -571,7 +573,7 @@ export function QuotationModal({
                     <Button
                       type="submit"
                       disabled={isSubmitting}
-                      className="flex-1 h-16 bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:opacity-70"
+                      className="flex-1 h-16 bg-teal-600 hover:bg-teal-700 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 disabled:scale-100 disabled:opacity-70"
                     >
                       {isSubmitting ? (
                         <motion.div
@@ -592,7 +594,7 @@ export function QuotationModal({
                       type="button"
                       variant="outline"
                       onClick={onClose}
-                      className="h-16 px-8 border-2 border-gray-300 hover:bg-gray-50 rounded-2xl font-semibold text-base transition-all duration-200 hover:shadow-md"
+                      className="h-16 px-8 border-2 border-teal-300 hover:bg-teal-70 hover:border-teal-400 rounded-2xl font-semibold text-base text-teal-700 hover:text-teal-800 transition-all duration-200 hover:shadow-md"
                     >
                       Cancel
                     </Button>
