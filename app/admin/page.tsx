@@ -32,6 +32,9 @@ import {
 } from "lucide-react"
 import { createClient } from "@supabase/supabase-js"
 import { ImageUpload } from "@/components/image-upload"
+// Import EmailJS
+import emailjs from "@emailjs/browser"
+import { projectGetSourceForAsset } from "next/dist/build/swc/generated-native"
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
@@ -112,6 +115,9 @@ export default function AdminPage() {
   })
 
   useEffect(() => {
+    // Initialize EmailJS with the public key
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC1_KEY!)
+
     const authenticated = sessionStorage.getItem("admin_authenticated")
     if (authenticated === "true") {
       setIsAuthenticated(true)
@@ -183,6 +189,52 @@ export default function AdminPage() {
     }
   }
 
+  const sendQuotationEmail = async (
+    quotation: Quotation,
+    adminResponse: string,
+    quotedPrice?: number,
+  ) => {
+    try {
+      const templateParams = {
+        to_email: quotation.customer_email,
+        to_name: quotation.customer_name,
+        customer_name: quotation.customer_name,
+        customer_company: quotation.company || "N/A",
+        customer_email: quotation.customer_email,
+        customer_phone: quotation.customer_phone || "N/A",
+        product_name: quotation.product_name,
+        quantity: quotation.quantity,
+        preferred_size: quotation.preferred_size,
+        preferred_material: quotation.preferred_material,
+        additional_requirements: quotation.additional_requirements || "None",
+        quotation_details: adminResponse,
+        quoted_price: quotedPrice ? `₹${quotedPrice}` : "To be discussed",
+        request_date: new Date(quotation.created_at).toLocaleDateString(),
+        quotation_date: new Date().toLocaleDateString(),
+        from_name: process.env.NEXT_PUBLIC_EMAILJS_FROM_NAME!,
+        company_email: process.env.NEXT_PUBLIC_EMAILJS_COMPANY_EMAIL!,
+        company_phone: process.env.NEXT_PUBLIC_EMAILJS_COMPANY_PHONE!,
+        company_address: process.env.NEXT_PUBLIC_EMAILJS_COMPANY_ADDRESS!,
+      }
+
+      const response = await emailjs.send(
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE1_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE1_ID!,
+        templateParams,
+      )
+
+      if (response.status === 200) {
+        console.log("Email sent successfully:", response)
+        alert("Quotation email sent successfully!")
+      } else {
+        throw new Error("Failed to send email")
+      }
+    } catch (error) {
+      console.error("Error sending email:", error)
+      setOperationError(`Failed to send email: ${error}`)
+    }
+  }
+
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
     if (password === ADMIN_PASSWORD) {
@@ -210,7 +262,6 @@ export default function AdminPage() {
     setIsSubmitting(true)
     setOperationError(null)
 
-    // Validate required fields
     if (
       !formData.name ||
       !formData.description ||
@@ -266,7 +317,6 @@ export default function AdminPage() {
       }
 
       if (success) {
-        // Reset form
         setFormData({
           name: "",
           description: "",
@@ -641,7 +691,7 @@ export default function AdminPage() {
                           value={formData.sizeRange}
                           onChange={handleChange}
                           required
-                          placeholder="e.g., 1/2&quot; - 12&quot;"
+                          placeholder="e.g., 1/2\"
                         />
                       </div>
                     </div>
@@ -687,7 +737,7 @@ export default function AdminPage() {
                         value={formData.applications}
                         onChange={handleChange}
                         rows={4}
-                        placeholder="Water supply systems&#10;Industrial piping&#10;Chemical processing&#10;HVAC systems"
+                        placeholder="Water supply systems\nIndustrial piping\nChemical processing\nHVAC systems"
                       />
                     </div>
 
@@ -699,7 +749,7 @@ export default function AdminPage() {
                         value={formData.additionalSpecs}
                         onChange={handleChange}
                         rows={4}
-                        placeholder="NSF certified&#10;UV resistant&#10;Corrosion resistant&#10;Easy installation"
+                        placeholder="NSF certified\nUV resistant\nCorrosion resistant\nEasy installation"
                       />
                     </div>
 
@@ -935,6 +985,11 @@ export default function AdminPage() {
                                 updateQuotationStatus(
                                   quotation.id,
                                   "quoted",
+                                  response,
+                                  price ? Number.parseFloat(price) : undefined,
+                                )
+                                sendQuotationEmail(
+                                  quotation,
                                   response,
                                   price ? Number.parseFloat(price) : undefined,
                                 )
