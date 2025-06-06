@@ -1,6 +1,6 @@
 "use client"
 
-import type React from "react"
+import React from "react"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -25,17 +25,14 @@ import {
   Tags,
   AlertCircle,
   RefreshCw,
-  FileText,
-  Mail,
-  Clock,
-  XCircle,
 } from "lucide-react"
 import { createClient } from "@supabase/supabase-js"
 import { ImageUpload } from "@/components/image-upload"
-// Import EmailJS
+import { Toaster } from "@/components/ui/toaster"
+import { useToast } from "@/hooks/use-toast"
 import emailjs from "@emailjs/browser"
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
+const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -69,6 +66,8 @@ export default function AdminPage() {
     refreshData,
   } = useProducts()
 
+  const { toast } = useToast()
+
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [password, setPassword] = useState("")
   const [showPassword, setShowPassword] = useState(false)
@@ -94,9 +93,7 @@ export default function AdminPage() {
   })
 
   useEffect(() => {
-    // Initialize EmailJS with the public key
-    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC1_KEY!)
-
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY)
     const authenticated = sessionStorage.getItem("admin_authenticated")
     if (authenticated === "true") {
       setIsAuthenticated(true)
@@ -113,17 +110,28 @@ export default function AdminPage() {
 
       if (error) {
         console.error("Error fetching user inquiries:", error)
-        setOperationError(`Error fetching user inquiries: ${error.message}`)
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: `Failed to fetch user inquiries: ${error.message}`,
+        })
       } else {
         setUserInquiries(data || [])
-        setOperationError(null)
+        toast({
+          title: "Success",
+          description: "User inquiries loaded successfully.",
+          className: "bg-teal-600 text-white",
+        })
       }
     } catch (error) {
       console.error("Error:", error)
-      setOperationError(`Unexpected error: ${error}`)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `Unexpected error: ${error instanceof Error ? error.message : "Unknown error"}`,
+      })
     }
   }
-  
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -132,9 +140,18 @@ export default function AdminPage() {
       setAuthError("")
       sessionStorage.setItem("admin_authenticated", "true")
       fetchUserInquiries()
+      toast({
+        title: "Success",
+        description: "Logged in successfully.",
+      })
     } else {
       setAuthError("Invalid password. Please try again.")
       setPassword("")
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Invalid password. Please try again.",
+      })
     }
   }
 
@@ -143,6 +160,11 @@ export default function AdminPage() {
     sessionStorage.removeItem("admin_authenticated")
     setPassword("")
     setUserInquiries([])
+    toast({
+      title: "Success",
+      description: "Logged out successfully.",
+      className: "bg-teal-600 text-white",
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -160,6 +182,11 @@ export default function AdminPage() {
       !formData.temperatureRange
     ) {
       setOperationError("Please fill in all required fields.")
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please fill in all required fields.",
+      })
       setIsSubmitting(false)
       return
     }
@@ -195,12 +222,20 @@ export default function AdminPage() {
         success = await updateProduct(editingProduct, productData)
         if (success) {
           setEditingProduct(null)
-          alert("Product updated successfully!")
+          toast({
+            title: "Success",
+            description: "Product updated successfully!",
+            className: "bg-teal-600 text-white",
+          })
         }
       } else {
         success = await addProduct(productData)
         if (success) {
-          alert("Product added successfully!")
+          toast({
+            title: "Success",
+            description: "Product added successfully!",
+            className: "bg-teal-600 text-white"
+          })
         }
       }
 
@@ -219,11 +254,21 @@ export default function AdminPage() {
         })
         setOperationError(null)
       } else {
-        setOperationError(error || "Operation failed. Please try again.")
+        setOperationError("Operation failed. Please try again.")
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Operation failed. Please try again.",
+        })
       }
     } catch (error) {
       console.error("Error:", error)
-      setOperationError(`An unexpected error occurred: ${error}`)
+      setOperationError(`An unexpected error occurred: ${error instanceof Error ? error.message : "Unknown error"}`)
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: `An unexpected error occurred: ${error instanceof Error ? error.message : "Unknown error"}`,
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -245,6 +290,10 @@ export default function AdminPage() {
     })
     setActiveTab("products")
     setOperationError(null)
+    toast({
+      title: "Editing",
+      description: `Editing product: ${product.name}`,
+    })
   }
 
   const handleCancelEdit = () => {
@@ -262,6 +311,10 @@ export default function AdminPage() {
       additionalSpecs: "",
     })
     setOperationError(null)
+    toast({
+      title: "Cancelled",
+      description: "Product editing cancelled.",
+    })
   }
 
   const handleAddCategory = async (e: React.FormEvent) => {
@@ -270,16 +323,30 @@ export default function AdminPage() {
 
     if (!newCategory.trim()) {
       setOperationError("Please enter a category name.")
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Please enter a category name.",
+      })
       return
     }
 
     const success = await addCategory(newCategory.trim())
     if (success) {
       setNewCategory("")
-      alert("Category added successfully!")
+      toast({
+        title: "Success",
+        description: `Category "${newCategory}" added successfully!`,
+        className: "bg-teal-600 text-white",
+      })
       setOperationError(null)
     } else {
-      setOperationError(error || "Failed to add category. Please try again.")
+      setOperationError("Failed to add category. Please try again.")
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to add category. Please try again.",
+      })
     }
   }
 
@@ -287,8 +354,19 @@ export default function AdminPage() {
     if (window.confirm(`Are you sure you want to remove the category "${category}"?`)) {
       setOperationError(null)
       const success = await removeCategory(category)
-      if (!success) {
-        setOperationError(error || `Cannot remove category "${category}". It may be in use by existing products.`)
+      if (success) {
+        toast({
+          title: "Success",
+          description: `Category "${category}" removed successfully!`,
+          className: "bg-teal-600 text-white",
+        })
+      } else {
+        setOperationError(`Cannot remove category "${category}". It may be in use by existing products.`)
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: `Cannot remove category "${category}". It may be in use.`,
+        })
       }
     }
   }
@@ -298,10 +376,19 @@ export default function AdminPage() {
       setOperationError(null)
       const success = await removeProduct(productId)
       if (success) {
-        alert("Product removed successfully!")
+        toast({
+          title: "Success",
+          description: "Product removed successfully!",
+          className: "bg-teal-600 text-white",
+        })
         setOperationError(null)
       } else {
-        setOperationError(error || "Failed to remove product. Please try again.")
+        setOperationError("Failed to remove product. Please try again.")
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Failed to remove product. Please try again.",
+        })
       }
     }
   }
@@ -324,7 +411,13 @@ export default function AdminPage() {
     setOperationError(null)
     await refreshData()
     await fetchUserInquiries()
+    toast({
+      title: "Success",
+      description: "Data refreshed successfully.",
+      className: "bg-teal-700 text-white",
+    })
   }
+
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen py-20 flex items-center justify-center bg-gradient-to-br from-teal-50 to-blue-50 dark:from-gray-900 dark:to-green-950">
@@ -409,6 +502,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen py-20">
+      <Toaster />
       <div className="container mx-auto px-4">
         {/* Header */}
         <motion.div initial="initial" animate="animate" variants={fadeInUp} className="text-center mb-12">
