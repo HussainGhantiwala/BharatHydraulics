@@ -205,18 +205,6 @@ export default function HomePage() {
   const { products } = useProducts()
   const featuredProducts = products.slice(0, 4)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
-  const [isQuotationModalOpen, setIsQuotationModalOpen] = useState(false)
-
-  const handleQuotationClick = (product: Product) => {
-    setSelectedProduct(product)
-    setIsQuotationModalOpen(true)
-  }
-
-  const closeQuotationModal = () => {
-    setIsQuotationModalOpen(false)
-    setSelectedProduct(null)
-  }
-
   return (
     <div className="min-h-screen">
       {/* Hero Section with Gradient Background */}
@@ -276,7 +264,7 @@ export default function HomePage() {
                     }}
                     transition={{ duration: 0.3 }}
                   >
-                    & Engineering
+                    & Engineering Co.
                   </motion.span>
                 </motion.h1>
 
@@ -590,7 +578,7 @@ export default function HomePage() {
             className="text-center mb-20"
           >
             <motion.h2 variants={fadeInUp} className="text-4xl lg:text-5xl font-bold mb-6">
-              Why Choose Bharat Hydraulics & Engineering?
+              Why Choose Bharat Hydraulics & Engineering Co.?
             </motion.h2>
             <motion.p variants={fadeInUp} className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
               We deliver exceptional quality and service that sets us apart in the industry

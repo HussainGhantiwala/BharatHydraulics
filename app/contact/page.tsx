@@ -240,7 +240,7 @@ export default function ContactPage() {
               {
                 icon: Mail,
                 title: "Email",
-                content: "info@bharathydraulics.com\nsales@bharathydraulics.com",
+                content: "info.bharathydraulic@gmail.com",
               },
               {
                 icon: Clock,

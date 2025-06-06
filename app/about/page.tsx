@@ -62,7 +62,7 @@ export default function AboutPage() {
               <span className="text-teal-600 dark:text-green-400"> Innovation</span>
             </h1>
             <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              For over 15 years, Bharat Hydraulics & Engineering has been at the forefront of providing premium Bharat Hydraulics & Engineering products to
+              For over 15 years, Bharat Hydraulics & Engineering Co. has been at the forefront of providing premium Bharat Hydraulics & Engineering Co. products to
               industries worldwide.
             </p>
           </motion.div>
@@ -80,8 +80,8 @@ export default function AboutPage() {
             <h2 className="text-3xl font-bold mb-6">Our Story</h2>
             <div className="space-y-4 text-gray-600 dark:text-gray-300">
               <p>
-                Founded in 2008, Bharat Hydraulics & Engineering began as a small family business with a vision to provide
-                high-quality Bharat Hydraulics & Engineering products to local industries. What started as a modest operation has grown into a
+                Founded in 2008, Bharat Hydraulics & Engineering Co. began as a small family business with a vision to provide
+                high-quality Bharat Hydraulics & Engineering Co. products to local industries. What started as a modest operation has grown into a
                 leading supplier serving clients across multiple continents.
               </p>
               <p>
@@ -91,7 +91,7 @@ export default function AboutPage() {
               </p>
               <p>
                 Today, we're proud to be a trusted partner for thousands of businesses worldwide, providing them with
-                reliable, durable, and cost-effective Bharat Hydraulics & Engineering products that keep their operations running smoothly.
+                reliable, durable, and cost-effective Bharat Hydraulics & Engineering Co. products that keep their operations running smoothly.
               </p>
             </div>
           </motion.div>
@@ -124,7 +124,7 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  To provide innovative, high-quality Bharat Hydraulics & Engineering that exceed customer expectations while
+                  To provide innovative, high-quality Bharat Hydraulics & Engineering Co. that exceed customer expectations while
                   maintaining environmental responsibility and contributing to sustainable industrial development
                   worldwide.
                 </CardDescription>
@@ -141,7 +141,7 @@ export default function AboutPage() {
               </CardHeader>
               <CardContent>
                 <CardDescription className="text-base">
-                  To be the global leader in Bharat Hydraulics & Engineering, recognized for our innovation, quality, and commitment
+                  To be the global leader in Bharat Hydraulics & Engineering Co., recognized for our innovation, quality, and commitment
                   to customer success, while setting new standards for excellence in the industry.
                 </CardDescription>
               </CardContent>

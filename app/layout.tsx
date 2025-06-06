@@ -11,7 +11,7 @@ import { UserInfoModal } from "@/components/user-info-modal"
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Bharat Hydraulics & Engineering - Premium Pipe Clamps & Flanges",
+  title: "Bharat Hydraulics & Engineering Co. - Premium Pipe Clamps & Flanges",
   description:
     "Professional supplier of high-quality PVC pipe clamps, flanges, and fittings for industrial and commercial applications.",
   keywords: "PVC pipes, pipe clamps, flanges, industrial fittings, plumbing supplies",

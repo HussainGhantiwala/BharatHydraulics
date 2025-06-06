@@ -136,7 +136,6 @@ export default function ProductDetailPage() {
                 <Link href="/contact">
                 Request Quote
                 </Link>
-
               </Button>
               <Button variant="outline" className="flex-1">
                 <Download className="mr-2 h-4 w-4" />

@@ -12,7 +12,7 @@ export function Footer() {
               <div className="w-8 h-8 bg-teal-600 dark:bg-green-600 rounded-lg flex items-center justify-center">
                 <Wrench className="h-5 w-5 text-white" />
               </div>
-              <span className="text-xl font-bold">Bharat Hydraulics & Engineering</span>
+              <span className="text-xl font-bold">Bharat Hydraulics & Engineering Co.</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Leading supplier of premium PVC pipe clamps, flanges, and fittings for industrial and commercial
@@ -79,14 +79,14 @@ export function Footer() {
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-teal-400 dark:text-green-400 flex-shrink-0" />
-                <span className="text-gray-400 text-sm">info@pvcprosolutions.com</span>
+                <span className="text-gray-400 text-sm">info.bharathydraulic@gmail.com</span>
               </div>
             </div>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400 text-sm">© 2024 Bharat Hydraulics & Engineering. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">© 2024 Bharat Hydraulics & Engineering Co. All rights reserved.</p>
         </div>
       </div>
     </footer>

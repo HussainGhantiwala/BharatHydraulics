@@ -27,7 +27,7 @@ export function Navbar() {
             <div className="w-8 h-8 bg-teal-600 dark:bg-green-600 rounded-lg flex items-center justify-center">
               <Wrench className="h-5 w-5 text-white" />
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">Bharat Hydraulics & Engineering</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">Bharat Hydraulics & Engineering Co.</span>
           </Link>
 
           {/* Desktop Navigation */}
