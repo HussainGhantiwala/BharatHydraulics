@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import dynamic from "next/dynamic"
 import {
   Card,
   CardContent,
@@ -17,11 +18,16 @@ import { Label } from "@/components/ui/label"
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react"
 import emailjs from "@emailjs/browser"
 
-const fadeInUp = {
+// Dynamically import InteractiveMap to disable SSR
+const InteractiveMap = dynamic(() => import("./InteractiveMap"), {
+  ssr: false,
+})
+
+const fadeInUp = () => ({
   initial: { opacity: 0, y: 60 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6 },
-}
+})
 
 const staggerContainer = {
   animate: {
@@ -48,7 +54,6 @@ function Toast({
   const bgColor = variant === "destructive" ? "bg-red-600" : "bg-teal-600"
   const textColor = "text-white"
 
-  // Auto dismiss after 3 seconds
   useEffect(() => {
     if (show) {
       const timer = setTimeout(() => {
@@ -66,20 +71,22 @@ function Toast({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
           transition={{ duration: 0.3 }}
-          className={`fixed bottom-6 right-6 max-w-sm rounded shadow-lg p-4 ${bgColor} ${textColor} z-[9999]`}
+          className={`fixed bottom-4 right-4 max-w-sm rounded-lg shadow-lg p-4 ${bgColor} ${textColor} z-[1000]`}
         >
-          <div className="flex justify-between items-start">
+          <div className="flex justify-between items-center">
             <div>
-              <h4 className="font-bold text-lg">{title}</h4>
-              {description && <p className="mt-1 text-sm">{description}</p>}
+              <h3 className="font-bold text-sm">{title}</h3>
+              {description && <p className="text-xs mt-1">{description}</p>}
             </div>
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={onClose}
-              className="ml-4 text-white hover:opacity-75 transition-opacity"
+              className="text-white hover:bg-transparent/20"
               aria-label="Close notification"
             >
-              &#x2715;
-            </button>
+              ✕
+            </Button>
           </div>
         </motion.div>
       )}
@@ -106,15 +113,14 @@ export default function ContactPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Toast state
-  const [toast, setToast] = useState<{
-    show: boolean
-    title: string
-    description?: string
-    variant?: "default" | "destructive"
-  }>({ show: false, title: "" })
+  const [toast, setToast] = useState({
+    show: false,
+    title: "",
+    description: null,
+    variant: "default",
+  })
 
-  const formRef = useRef<HTMLFormElement>(null)
+  const formRef = useRef(null)
 
   const validateForm = () => {
     const errors = { name: "", email: "", message: "", subject: "" }
@@ -133,17 +139,17 @@ export default function ContactPage() {
     return Object.values(errors).every((val) => val === "")
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validateForm()) return
     setIsSubmitting(true)
 
     try {
       await emailjs.sendForm(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-        formRef.current!,
-        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+        formRef.current,
+        process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
       )
 
       setToast({
@@ -165,7 +171,7 @@ export default function ContactPage() {
       setToast({
         show: true,
         title: "Error",
-        description: "Failed to send. Please try again.",
+        description: "Failed to send message. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -173,93 +179,88 @@ export default function ContactPage() {
     }
   }
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
   return (
-    <div className="min-h-screen py-20">
-      {/* Toast Container */}
+    <div className="min-h-screen py-12 bg-background">
       <Toast
         show={toast.show}
         title={toast.title}
         description={toast.description}
         variant={toast.variant}
-        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+        onClose={() => setToast({ ...toast, show: false })}
       />
 
       <div className="container mx-auto px-4">
-        {/* Header */}
         <motion.div
           initial="initial"
           animate="animate"
           variants={staggerContainer}
-          className="text-center mb-16"
+          className="text-center mb-12"
         >
-          <motion.div variants={fadeInUp}>
+          <motion.div variants={fadeInUp()}>
             <Badge
               variant="secondary"
-              className="bg-teal-100 text-teal-800 dark:bg-green-900 dark:text-green-100 mb-4"
+              className="mb-4 bg-teal-100 text-teal-800 dark:bg-green-900 dark:text-green-100"
             >
               Contact Us
             </Badge>
-            <h1 className="text-5xl font-bold mb-6">
+            <h1 className="text-4xl font-bold mb-4">
               Get in <span className="text-teal-600 dark:text-green-400">Touch</span>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              Reach out to us for all your PVC project and fitting needs. We're here to help.
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+              Reach out for all your PVC project and fitting needs. We're here to help.
             </p>
           </motion.div>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* Contact Info */}
+        <div className="grid lg:grid-cols-3 gap-8">
           <motion.div
             initial="initial"
             animate="animate"
             variants={staggerContainer}
             className="space-y-6"
           >
-            <motion.div variants={fadeInUp}>
-              <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
+            <motion.div variants={fadeInUp()}>
+              <h2 className="text-2xl font-semibold mb-4">Contact Information</h2>
             </motion.div>
 
             {[
               {
                 icon: MapPin,
                 title: "Address",
-                content: "123 Industrial Area\nMIDC, Mumbai, MH 400001",
+                content: "Ground floor A block,\nPlot number 78/b/12, sy no 79,\nVijaya laxmi communications Jeedimetla.",
               },
               {
                 icon: Phone,
                 title: "Phone",
-                content: "+91 98765 43210\n+91 87654 32109",
+                content: "+91-63004 75068",
               },
               {
                 icon: Mail,
                 title: "Email",
-                content: "info.bharathydraulic@gmail.com",
+                content: "bharathydraulicsandengineeringco@gmail.com",
               },
               {
                 icon: Clock,
                 title: "Business Hours",
-                content: "Mon-Sat: 9:00 AM - 6:00 PM\nSunday: Closed",
+                content: "Mon-Sat: 9:00 AM - 8:00 PM\nSunday: Closed",
               },
             ].map((item, idx) => (
-              <motion.div key={idx} variants={fadeInUp}>
+              <motion.div key={idx} variants={fadeInUp()}>
                 <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-teal-100 dark:bg-green-800 rounded-lg flex items-center justify-center">
-                        <item.icon className="h-5 w-5 text-teal-600 dark:text-green-400" />
+                  <CardHeader className="pb-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="w-8 h-8 bg-teal-100 dark:bg-green-900 rounded-md flex items-center justify-center">
+                        <item.icon className="h-4 w-4 text-teal-600 dark:text-green-400" />
                       </div>
-                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                      <CardTitle className="text-base">{item.title}</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="whitespace-pre-line text-base">
+                    <CardDescription className="text-sm whitespace-pre-line">
                       {item.content}
                     </CardDescription>
                   </CardContent>
@@ -268,23 +269,22 @@ export default function ContactPage() {
             ))}
           </motion.div>
 
-          {/* Contact Form */}
-          <motion.div initial="initial" animate="animate" variants={fadeInUp} className="lg:col-span-2">
+          <motion.div initial="initial" animate="animate" variants={fadeInUp()} className="lg:col-span-2">
             <Card>
               <CardHeader>
-                <CardTitle className="text-2xl">Send us a Message</CardTitle>
-                <CardDescription>We usually respond within 24 hours.</CardDescription>
+                <CardTitle className="text-xl">Send us a Message</CardTitle>
+                <CardDescription>We'll respond within 24 hours.</CardDescription>
               </CardHeader>
               <CardContent>
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="name">Full Name *</Label>
+                    <div className="space-y-1">
+                      <Label htmlFor="name">Name *</Label>
                       <Input id="name" name="name" value={formData.name} onChange={handleChange} required />
-                      {formErrors.name && <p className="text-red-600 text-sm">{formErrors.name}</p>}
+                      {formErrors.name && <p className="text-xs text-red-600">{formErrors.name}</p>}
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">Email Address *</Label>
+                    <div className="space-y-1">
+                      <Label htmlFor="email">Email *</Label>
                       <Input
                         id="email"
                         name="email"
@@ -293,38 +293,38 @@ export default function ContactPage() {
                         onChange={handleChange}
                         required
                       />
-                      {formErrors.email && <p className="text-red-600 text-sm">{formErrors.email}</p>}
+                      {formErrors.email && <p className="text-xs text-red-600">{formErrors.email}</p>}
                     </div>
                   </div>
 
                   <div className="grid md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <Label htmlFor="company">Company</Label>
                       <Input id="company" name="company" value={formData.company} onChange={handleChange} />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <Label htmlFor="phone">Phone</Label>
                       <Input id="phone" name="phone" value={formData.phone} onChange={handleChange} />
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label htmlFor="subject">Subject *</Label>
                     <Input id="subject" name="subject" value={formData.subject} onChange={handleChange} required />
-                    {formErrors.subject && <p className="text-red-600 text-sm">{formErrors.subject}</p>}
+                    {formErrors.subject && <p className="text-xs text-red-600">{formErrors.subject}</p>}
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <Label htmlFor="message">Message *</Label>
                     <Textarea
                       id="message"
                       name="message"
-                      rows={6}
+                      rows={5}
                       value={formData.message}
                       onChange={handleChange}
                       required
                     />
-                    {formErrors.message && <p className="text-red-600 text-sm">{formErrors.message}</p>}
+                    {formErrors.message && <p className="text-xs text-red-600">{formErrors.message}</p>}
                   </div>
 
                   <Button
@@ -347,23 +347,20 @@ export default function ContactPage() {
           </motion.div>
         </div>
 
-        {/* Map Section */}
         <motion.div
           initial="initial"
           whileInView="animate"
           viewport={{ once: true }}
-          variants={fadeInUp}
-          className="mt-16"
+          variants={fadeInUp()}
+          className="mt-12"
         >
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Find Us</CardTitle>
-              <CardDescription>Visit our facility and showroom in Mumbai</CardDescription>
+              <CardTitle className="text-xl">Find Us</CardTitle>
+              <CardDescription>Visit our facility in Hyderabad - Click the map to open in Google Maps</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="w-full h-64 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500 dark:text-gray-400">Interactive Map Coming Soon</p>
-              </div>
+              <InteractiveMap />
             </CardContent>
           </Card>
         </motion.div>
