@@ -34,7 +34,6 @@ import { createClient } from "@supabase/supabase-js"
 import { ImageUpload } from "@/components/image-upload"
 // Import EmailJS
 import emailjs from "@emailjs/browser"
-import { projectGetSourceForAsset } from "next/dist/build/swc/generated-native"
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
@@ -54,25 +53,6 @@ interface UserInquiry {
   location?: string
   message?: string
   created_at: string
-}
-
-interface Quotation {
-  id: string
-  product_id: string
-  product_name: string
-  customer_name: string
-  customer_email: string
-  customer_phone?: string
-  company?: string
-  quantity: string
-  preferred_size: string
-  preferred_material: string
-  additional_requirements?: string
-  status: "pending" | "quoted" | "accepted" | "rejected"
-  admin_response?: string
-  quoted_price?: number
-  created_at: string
-  updated_at: string
 }
 
 export default function AdminPage() {
@@ -95,7 +75,6 @@ export default function AdminPage() {
   const [authError, setAuthError] = useState("")
   const [activeTab, setActiveTab] = useState("products")
   const [userInquiries, setUserInquiries] = useState<UserInquiry[]>([])
-  const [quotations, setQuotations] = useState<Quotation[]>([])
   const [editingProduct, setEditingProduct] = useState<string | null>(null)
   const [newCategory, setNewCategory] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -122,7 +101,6 @@ export default function AdminPage() {
     if (authenticated === "true") {
       setIsAuthenticated(true)
       fetchUserInquiries()
-      fetchQuotations()
     }
   }, [])
 
@@ -145,95 +123,7 @@ export default function AdminPage() {
       setOperationError(`Unexpected error: ${error}`)
     }
   }
-
-  const fetchQuotations = async () => {
-    try {
-      const { data, error } = await supabase.from("quotations").select("*").order("created_at", { ascending: false })
-
-      if (error) {
-        console.error("Error fetching quotations:", error)
-        setOperationError(`Error fetching quotations: ${error.message}`)
-      } else {
-        setQuotations(data || [])
-        setOperationError(null)
-      }
-    } catch (error) {
-      console.error("Error:", error)
-      setOperationError(`Unexpected error: ${error}`)
-    }
-  }
-
-  const updateQuotationStatus = async (
-    quotationId: string,
-    status: string,
-    adminResponse?: string,
-    quotedPrice?: number,
-  ) => {
-    try {
-      const updateData: any = { status }
-      if (adminResponse) updateData.admin_response = adminResponse
-      if (quotedPrice) updateData.quoted_price = quotedPrice
-
-      const { error } = await supabase.from("quotations").update(updateData).eq("id", quotationId)
-
-      if (error) {
-        console.error("Error updating quotation:", error)
-        setOperationError(`Error updating quotation: ${error.message}`)
-      } else {
-        await fetchQuotations()
-        alert("Quotation updated successfully!")
-      }
-    } catch (error) {
-      console.error("Error:", error)
-      setOperationError(`Unexpected error: ${error}`)
-    }
-  }
-
-  const sendQuotationEmail = async (
-    quotation: Quotation,
-    adminResponse: string,
-    quotedPrice?: number,
-  ) => {
-    try {
-      const templateParams = {
-        to_email: quotation.customer_email,
-        to_name: quotation.customer_name,
-        customer_name: quotation.customer_name,
-        customer_company: quotation.company || "N/A",
-        customer_email: quotation.customer_email,
-        customer_phone: quotation.customer_phone || "N/A",
-        product_name: quotation.product_name,
-        quantity: quotation.quantity,
-        preferred_size: quotation.preferred_size,
-        preferred_material: quotation.preferred_material,
-        additional_requirements: quotation.additional_requirements || "None",
-        quotation_details: adminResponse,
-        quoted_price: quotedPrice ? `₹${quotedPrice}` : "To be discussed",
-        request_date: new Date(quotation.created_at).toLocaleDateString(),
-        quotation_date: new Date().toLocaleDateString(),
-        from_name: process.env.NEXT_PUBLIC_EMAILJS_FROM_NAME!,
-        company_email: process.env.NEXT_PUBLIC_EMAILJS_COMPANY_EMAIL!,
-        company_phone: process.env.NEXT_PUBLIC_EMAILJS_COMPANY_PHONE!,
-        company_address: process.env.NEXT_PUBLIC_EMAILJS_COMPANY_ADDRESS!,
-      }
-
-      const response = await emailjs.send(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE1_ID!,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE1_ID!,
-        templateParams,
-      )
-
-      if (response.status === 200) {
-        console.log("Email sent successfully:", response)
-        alert("Quotation email sent successfully!")
-      } else {
-        throw new Error("Failed to send email")
-      }
-    } catch (error) {
-      console.error("Error sending email:", error)
-      setOperationError(`Failed to send email: ${error}`)
-    }
-  }
+  
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault()
@@ -242,7 +132,6 @@ export default function AdminPage() {
       setAuthError("")
       sessionStorage.setItem("admin_authenticated", "true")
       fetchUserInquiries()
-      fetchQuotations()
     } else {
       setAuthError("Invalid password. Please try again.")
       setPassword("")
@@ -254,7 +143,6 @@ export default function AdminPage() {
     sessionStorage.removeItem("admin_authenticated")
     setPassword("")
     setUserInquiries([])
-    setQuotations([])
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -436,24 +324,7 @@ export default function AdminPage() {
     setOperationError(null)
     await refreshData()
     await fetchUserInquiries()
-    await fetchQuotations()
   }
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100"
-      case "quoted":
-        return "bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100"
-      case "accepted":
-        return "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100"
-      case "rejected":
-        return "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100"
-      default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100"
-    }
-  }
-
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen py-20 flex items-center justify-center bg-gradient-to-br from-teal-50 to-blue-50 dark:from-gray-900 dark:to-green-950">

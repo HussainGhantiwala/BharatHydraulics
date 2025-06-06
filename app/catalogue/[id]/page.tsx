@@ -133,7 +133,10 @@ export default function ProductDetailPage() {
                 className="flex-1 bg-teal-600 hover:bg-teal-700 dark:bg-green-600 dark:hover:bg-green-700"
               >
                 <ShoppingCart className="mr-2 h-4 w-4" />
+                <Link href="/contact">
                 Request Quote
+                </Link>
+
               </Button>
               <Button variant="outline" className="flex-1">
                 <Download className="mr-2 h-4 w-4" />

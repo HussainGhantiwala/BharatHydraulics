@@ -1,8 +1,14 @@
 "use client"
 
-import React, { useState, useRef } from "react"
-import { motion } from "framer-motion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import React, { useState, useRef, useEffect } from "react"
+import { motion, AnimatePresence } from "framer-motion"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +16,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { MapPin, Phone, Mail, Clock, Send } from "lucide-react"
 import emailjs from "@emailjs/browser"
-import { useToast } from "@/hooks/use-toast"
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -24,6 +29,62 @@ const staggerContainer = {
       staggerChildren: 0.1,
     },
   },
+}
+
+// Custom Toast Component
+function Toast({
+  show,
+  title,
+  description,
+  variant = "default",
+  onClose,
+}: {
+  show: boolean
+  title: string
+  description?: string
+  variant?: "default" | "destructive"
+  onClose: () => void
+}) {
+  const bgColor = variant === "destructive" ? "bg-red-600" : "bg-teal-600"
+  const textColor = "text-white"
+
+  // Auto dismiss after 3 seconds
+  useEffect(() => {
+    if (show) {
+      const timer = setTimeout(() => {
+        onClose()
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [show, onClose])
+
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 50 }}
+          transition={{ duration: 0.3 }}
+          className={`fixed bottom-6 right-6 max-w-sm rounded shadow-lg p-4 ${bgColor} ${textColor} z-[9999]`}
+        >
+          <div className="flex justify-between items-start">
+            <div>
+              <h4 className="font-bold text-lg">{title}</h4>
+              {description && <p className="mt-1 text-sm">{description}</p>}
+            </div>
+            <button
+              onClick={onClose}
+              className="ml-4 text-white hover:opacity-75 transition-opacity"
+              aria-label="Close notification"
+            >
+              &#x2715;
+            </button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
 }
 
 export default function ContactPage() {
@@ -44,7 +105,15 @@ export default function ContactPage() {
   })
 
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+
+  // Toast state
+  const [toast, setToast] = useState<{
+    show: boolean
+    title: string
+    description?: string
+    variant?: "default" | "destructive"
+  }>({ show: false, title: "" })
+
   const formRef = useRef<HTMLFormElement>(null)
 
   const validateForm = () => {
@@ -77,9 +146,11 @@ export default function ContactPage() {
         process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
       )
 
-      toast({
+      setToast({
+        show: true,
         title: "Message Sent!",
         description: "We'll get back to you shortly.",
+        variant: "default",
       })
 
       setFormData({
@@ -91,7 +162,8 @@ export default function ContactPage() {
         message: "",
       })
     } catch (error) {
-      toast({
+      setToast({
+        show: true,
         title: "Error",
         description: "Failed to send. Please try again.",
         variant: "destructive",
@@ -101,17 +173,36 @@ export default function ContactPage() {
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
   return (
     <div className="min-h-screen py-20">
+      {/* Toast Container */}
+      <Toast
+        show={toast.show}
+        title={toast.title}
+        description={toast.description}
+        variant={toast.variant}
+        onClose={() => setToast((prev) => ({ ...prev, show: false }))}
+      />
+
       <div className="container mx-auto px-4">
         {/* Header */}
-        <motion.div initial="initial" animate="animate" variants={staggerContainer} className="text-center mb-16">
+        <motion.div
+          initial="initial"
+          animate="animate"
+          variants={staggerContainer}
+          className="text-center mb-16"
+        >
           <motion.div variants={fadeInUp}>
-            <Badge variant="secondary" className="bg-teal-100 text-teal-800 dark:bg-green-900 dark:text-green-100 mb-4">
+            <Badge
+              variant="secondary"
+              className="bg-teal-100 text-teal-800 dark:bg-green-900 dark:text-green-100 mb-4"
+            >
               Contact Us
             </Badge>
             <h1 className="text-5xl font-bold mb-6">
@@ -125,7 +216,12 @@ export default function ContactPage() {
 
         <div className="grid lg:grid-cols-3 gap-12">
           {/* Contact Info */}
-          <motion.div initial="initial" animate="animate" variants={staggerContainer} className="space-y-6">
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={staggerContainer}
+            className="space-y-6"
+          >
             <motion.div variants={fadeInUp}>
               <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
             </motion.div>
@@ -156,14 +252,16 @@ export default function ContactPage() {
                 <Card>
                   <CardHeader className="pb-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-teal-100 dark:bg-green-900 rounded-lg flex items-center justify-center">
+                      <div className="w-10 h-10 bg-teal-100 dark:bg-green-800 rounded-lg flex items-center justify-center">
                         <item.icon className="h-5 w-5 text-teal-600 dark:text-green-400" />
                       </div>
                       <CardTitle className="text-lg">{item.title}</CardTitle>
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <CardDescription className="whitespace-pre-line text-base">{item.content}</CardDescription>
+                    <CardDescription className="whitespace-pre-line text-base">
+                      {item.content}
+                    </CardDescription>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -187,7 +285,14 @@ export default function ContactPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Email Address *</Label>
-                      <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required />
+                      <Input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                      />
                       {formErrors.email && <p className="text-red-600 text-sm">{formErrors.email}</p>}
                     </div>
                   </div>
@@ -211,7 +316,14 @@ export default function ContactPage() {
 
                   <div className="space-y-2">
                     <Label htmlFor="message">Message *</Label>
-                    <Textarea id="message" name="message" rows={6} value={formData.message} onChange={handleChange} required />
+                    <Textarea
+                      id="message"
+                      name="message"
+                      rows={6}
+                      value={formData.message}
+                      onChange={handleChange}
+                      required
+                    />
                     {formErrors.message && <p className="text-red-600 text-sm">{formErrors.message}</p>}
                   </div>
 
@@ -221,7 +333,13 @@ export default function ContactPage() {
                     className="w-full bg-teal-600 hover:bg-teal-700 dark:bg-green-600 dark:hover:bg-green-700"
                     size="lg"
                   >
-                    {isSubmitting ? "Sending..." : (<><Send className="mr-2 h-4 w-4" /> Send Message</>)}
+                    {isSubmitting ? (
+                      "Sending..."
+                    ) : (
+                      <>
+                        <Send className="mr-2 h-4 w-4" /> Send Message
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>

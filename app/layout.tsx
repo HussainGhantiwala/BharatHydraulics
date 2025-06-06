@@ -7,7 +7,6 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { ProductProvider } from "@/contexts/product-context"
 import { UserInfoModal } from "@/components/user-info-modal"
-import { ToastProvider } from "@/components/ui/toast"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -26,7 +25,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-        <ToastProvider>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <ProductProvider>
             <div className="min-h-screen bg-background">
@@ -37,7 +35,6 @@ export default function RootLayout({
             </div>
           </ProductProvider>
         </ThemeProvider>
-        </ToastProvider>
 
       </body>
     </html>
