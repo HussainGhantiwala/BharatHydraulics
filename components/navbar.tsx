@@ -7,13 +7,11 @@ import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Menu, X, Wrench } from "lucide-react"
-
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/catalogue", label: "Catalogue" },
   { href: "/contact", label: "Contact" },
-  { href: "/admin", label: "Admin" },
 ]
 
 export function Navbar() {

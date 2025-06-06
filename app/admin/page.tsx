@@ -32,7 +32,10 @@ import { Toaster } from "@/components/ui/toaster"
 import { useToast } from "@/hooks/use-toast"
 import emailjs from "@emailjs/browser"
 
-const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
@@ -93,7 +96,7 @@ export default function AdminPage() {
   })
 
   useEffect(() => {
-    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY)
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!)
     const authenticated = sessionStorage.getItem("admin_authenticated")
     if (authenticated === "true") {
       setIsAuthenticated(true)
