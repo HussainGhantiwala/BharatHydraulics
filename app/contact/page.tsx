@@ -47,7 +47,7 @@ function Toast({
 }: {
   show: boolean
   title: string
-  description?: string
+  description?: string | null
   variant?: "default" | "destructive"
   onClose: () => void
 }) {
@@ -113,7 +113,12 @@ export default function ContactPage() {
 
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const [toast, setToast] = useState({
+  const [toast, setToast] = useState<{
+    show: boolean
+    title: string
+    description: string | null
+    variant: "default" | "destructive"
+  }>({
     show: false,
     title: "",
     description: null,
@@ -139,16 +144,16 @@ export default function ContactPage() {
     return Object.values(errors).every((val) => val === "")
   }
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!validateForm()) return
     setIsSubmitting(true)
 
     try {
       await emailjs.sendForm(
-        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
-        formRef.current,
+        process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
+        process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
+        formRef.current!,
         process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY
       )
 
@@ -179,7 +184,9 @@ export default function ContactPage() {
     }
   }
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
