@@ -47,7 +47,7 @@ function Toast({
 }: {
   show: boolean
   title: string
-  description?: string | null
+  description?: string
   variant?: "default" | "destructive"
   onClose: () => void
 }) {
@@ -144,7 +144,7 @@ export default function ContactPage() {
     return Object.values(errors).every((val) => val === "")
   }
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: { preventDefault: () => void }) => {
     e.preventDefault()
     if (!validateForm()) return
     setIsSubmitting(true)
@@ -184,9 +184,7 @@ export default function ContactPage() {
     }
   }
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: { target: { name: any; value: any } }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
@@ -195,7 +193,7 @@ export default function ContactPage() {
       <Toast
         show={toast.show}
         title={toast.title}
-        description={toast.description}
+        description={toast.description ?? undefined}
         variant={toast.variant}
         onClose={() => setToast({ ...toast, show: false })}
       />
@@ -248,7 +246,7 @@ export default function ContactPage() {
               {
                 icon: Mail,
                 title: "Email",
-                content: "bharathydraulicsandengineeringco@gmail.com",
+                content: "info.bharathydraulic@gmail.com",
               },
               {
                 icon: Clock,

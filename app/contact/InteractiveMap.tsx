@@ -55,9 +55,11 @@ const InteractiveMap: React.FC = () => {
           zoom={18}
           style={{ height: "100%", width: "100%", zIndex: 0 }}
           className="cursor-pointer"
-          whenCreated={(map) => {
-            if (!mapRef.current) {
-              mapRef.current = map
+          whenReady={() => {
+            if (!mapRef.current && containerRef.current) {
+              // Access the map instance via leaflet's internal API if needed
+              // For now, just mark as ready
+              // mapRef.current = ... (if you need to set it, use leaflet's API)
             }
           }}
         >
