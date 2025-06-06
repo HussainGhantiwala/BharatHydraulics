@@ -12,7 +12,6 @@ import Link from "next/link"
 import Image from "next/image"
 import { BrandsCarousel } from "@/components/brands-carousel"
 import { FloatingParticles } from "@/components/floating-particles"
-import { QuotationModal } from "@/components/quotation-modal"
 import { useProducts } from "@/contexts/product-context"
 import type { Product } from "@/contexts/product-context"
 
@@ -538,11 +537,13 @@ export default function HomePage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          onClick={() => handleQuotationClick(product)}
                           className="flex-1 border-teal-200 dark:border-green-700 hover:bg-teal-50 dark:hover:bg-green-950"
                         >
+                          
                           <ShoppingCart className="mr-1 h-3 w-3" />
+                          <Link href="/contact">
                           Quote
+                          </Link>
                         </Button>
                       </div>
                     </CardContent>
@@ -745,9 +746,6 @@ export default function HomePage() {
       </section>
 
       {/* Quotation Modal */}
-      {selectedProduct && (
-        <QuotationModal isOpen={isQuotationModalOpen} onClose={closeQuotationModal} product={selectedProduct} />
-      )}
     </div>
   )
 }

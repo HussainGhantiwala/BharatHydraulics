@@ -587,7 +587,6 @@ export default function AdminPage() {
             {[
               { id: "products", label: "Products", icon: Package },
               { id: "categories", label: "Categories", icon: Tags },
-              { id: "quotations", label: "Quotations", icon: FileText },
               { id: "traffic", label: "User Traffic", icon: Users },
               { id: "analytics", label: "Analytics", icon: BarChart3 },
             ].map((tab) => (
@@ -601,11 +600,6 @@ export default function AdminPage() {
               >
                 <tab.icon className="mr-2 h-4 w-4" />
                 {tab.label}
-                {tab.id === "quotations" && quotations.length > 0 && (
-                  <Badge variant="secondary" className="ml-2 bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100">
-                    {quotations.filter((q) => q.status === "pending").length}
-                  </Badge>
-                )}
               </Button>
             ))}
           </div>
@@ -889,154 +883,6 @@ export default function AdminPage() {
             </Card>
           </motion.div>
         )}
-
-        {/* Quotations Tab */}
-        {activeTab === "quotations" && (
-          <motion.div initial="initial" animate="animate" variants={fadeInUp}>
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center">
-                  <FileText className="mr-2 h-6 w-6" />
-                  Quotation Requests ({quotations.length})
-                </CardTitle>
-                <CardDescription>Manage customer quotation requests and provide pricing.</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-6 max-h-96 overflow-y-auto">
-                  {quotations.map((quotation) => (
-                    <motion.div
-                      key={quotation.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="p-6 border rounded-lg hover:shadow-md transition-shadow"
-                    >
-                      <div className="flex justify-between items-start mb-4">
-                        <div>
-                          <h4 className="font-semibold text-lg">{quotation.product_name}</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">
-                            Request from {quotation.customer_name}
-                          </p>
-                        </div>
-                        <Badge className={getStatusColor(quotation.status)}>
-                          {quotation.status.charAt(0).toUpperCase() + quotation.status.slice(1)}
-                        </Badge>
-                      </div>
-
-                      <div className="grid md:grid-cols-2 gap-4 mb-4">
-                        <div>
-                          <h5 className="font-medium mb-2">Customer Details</h5>
-                          <div className="space-y-1 text-sm">
-                            <p>
-                              <span className="font-medium">Email:</span> {quotation.customer_email}
-                            </p>
-                            {quotation.customer_phone && (
-                              <p>
-                                <span className="font-medium">Phone:</span> {quotation.customer_phone}
-                              </p>
-                            )}
-                            {quotation.company && (
-                              <p>
-                                <span className="font-medium">Company:</span> {quotation.company}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                        <div>
-                          <h5 className="font-medium mb-2">Requirements</h5>
-                          <div className="space-y-1 text-sm">
-                            <p>
-                              <span className="font-medium">Quantity:</span> {quotation.quantity}
-                            </p>
-                            <p>
-                              <span className="font-medium">Size:</span> {quotation.preferred_size}
-                            </p>
-                            <p>
-                              <span className="font-medium">Material:</span> {quotation.preferred_material}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {quotation.additional_requirements && (
-                        <div className="mb-4">
-                          <h5 className="font-medium mb-2">Additional Requirements</h5>
-                          <p className="text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
-                            {quotation.additional_requirements}
-                          </p>
-                        </div>
-                      )}
-
-                      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 mb-4">
-                        <span className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          {new Date(quotation.created_at).toLocaleDateString()} at{" "}
-                          {new Date(quotation.created_at).toLocaleTimeString()}
-                        </span>
-                      </div>
-
-                      {quotation.status === "pending" && (
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              const response = prompt("Enter your response to the customer:")
-                              const price = prompt("Enter quoted price (optional):")
-                              if (response) {
-                                updateQuotationStatus(
-                                  quotation.id,
-                                  "quoted",
-                                  response,
-                                  price ? Number.parseFloat(price) : undefined,
-                                )
-                                sendQuotationEmail(
-                                  quotation,
-                                  response,
-                                  price ? Number.parseFloat(price) : undefined,
-                                )
-                              }
-                            }}
-                            className="bg-blue-600 hover:bg-blue-700"
-                          >
-                            <Mail className="mr-1 h-3 w-3" />
-                            Send Quote
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => updateQuotationStatus(quotation.id, "rejected")}
-                            className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
-                          >
-                            <XCircle className="mr-1 h-3 w-3" />
-                            Reject
-                          </Button>
-                        </div>
-                      )}
-
-                      {quotation.admin_response && (
-                        <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-950/20 rounded-md">
-                          <h5 className="font-medium text-blue-800 dark:text-blue-200 mb-1">Admin Response</h5>
-                          <p className="text-sm text-blue-700 dark:text-blue-300">{quotation.admin_response}</p>
-                          {quotation.quoted_price && (
-                            <p className="text-sm font-medium text-blue-800 dark:text-blue-200 mt-1">
-                              Quoted Price: ${quotation.quoted_price}
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </motion.div>
-                  ))}
-
-                  {quotations.length === 0 && (
-                    <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      No quotation requests yet. Quotation requests will appear here when customers submit them.
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
         {/* User Traffic Tab */}
         {activeTab === "traffic" && (
           <motion.div initial="initial" animate="animate" variants={fadeInUp}>
@@ -1112,14 +958,6 @@ export default function AdminPage() {
               </Card>
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">Quotation Requests</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-3xl font-bold text-teal-600 dark:text-green-400">{quotations.length}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium">User Inquiries</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -1128,7 +966,7 @@ export default function AdminPage() {
               </Card>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div>
               <Card>
                 <CardHeader>
                   <CardTitle className="text-2xl flex items-center">
@@ -1146,37 +984,6 @@ export default function AdminPage() {
                           <div className="flex justify-between text-sm">
                             <span>{category}</span>
                             <span>{count} products</span>
-                          </div>
-                          <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                            <div
-                              className="bg-teal-600 dark:bg-green-600 h-2 rounded-full transition-all duration-300"
-                              style={{ width: `${percentage}%` }}
-                            />
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-2xl flex items-center">
-                    <FileText className="mr-2 h-6 w-6" />
-                    Quotation Status
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {["pending", "quoted", "accepted", "rejected"].map((status) => {
-                      const count = quotations.filter((quotation) => quotation.status === status).length
-                      const percentage = quotations.length > 0 ? (count / quotations.length) * 100 : 0
-                      return (
-                        <div key={status} className="space-y-2">
-                          <div className="flex justify-between text-sm">
-                            <span className="capitalize">{status}</span>
-                            <span>{count} requests</span>
                           </div>
                           <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
                             <div

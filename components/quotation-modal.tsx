@@ -288,26 +288,27 @@ export function QuotationModal({
                       </motion.div>
 
                       <div>
-                        <motion.h1
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.2 }}
-                          className="text-4xl font-bold text-white mb-2"
-                        >
-                          Request Your Quote
-                        </motion.h1>
-                        <motion.p
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.3 }}
-                          className="text-xl text-white"
-                        >
-                          Get personalized pricing for{" "}
-                          <span className="font-semibold text-white">
-                            {product.name}
-                          </span>
-                        </motion.p>
-                      </div>
+  <DialogTitle asChild>
+    <motion.h1
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.2 }}
+      className="text-4xl font-bold text-white mb-2"
+    >
+      Request Your Quote
+    </motion.h1>
+  </DialogTitle>
+
+  <motion.p
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ delay: 0.3 }}
+    className="text-xl text-white"
+  >
+    Get personalized pricing for{" "}
+    <span className="font-semibold text-white">{product.name}</span>
+  </motion.p>
+</div>
                     </div>
 
                     <Button

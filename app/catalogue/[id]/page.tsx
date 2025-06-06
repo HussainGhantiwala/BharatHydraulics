@@ -9,10 +9,6 @@ import { useProducts } from "@/contexts/product-context"
 import { ArrowLeft, Download, Share2, ShoppingCart } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
-import { QuotationModal } from "@/components/quotation-modal"
-import type { Product } from "@/contexts/product-context"
-
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
   animate: { opacity: 1, y: 0 },
@@ -23,15 +19,6 @@ export default function ProductDetailPage() {
   const params = useParams()
   const { products } = useProducts()
   const product = products.find((p) => p.id === params.id)
-  const [isQuotationModalOpen, setIsQuotationModalOpen] = useState(false)
-
-  const handleQuotationClick = () => {
-    setIsQuotationModalOpen(true)
-  }
-
-  const closeQuotationModal = () => {
-    setIsQuotationModalOpen(false)
-  }
 
   if (!product) {
     return (
@@ -143,7 +130,6 @@ export default function ProductDetailPage() {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-4">
               <Button
-                onClick={handleQuotationClick}
                 className="flex-1 bg-teal-600 hover:bg-teal-700 dark:bg-green-600 dark:hover:bg-green-700"
               >
                 <ShoppingCart className="mr-2 h-4 w-4" />
@@ -161,7 +147,6 @@ export default function ProductDetailPage() {
         </motion.div>
 
         {/* Quotation Modal */}
-        <QuotationModal isOpen={isQuotationModalOpen} onClose={closeQuotationModal} product={product} />
       </div>
     </div>
   )
