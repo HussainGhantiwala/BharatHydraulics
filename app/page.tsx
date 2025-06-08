@@ -52,7 +52,7 @@ const featuredProducts: Product[] = [
     sizeRange: '1/2" - 1"',
     pressureRating: "150 PSI",
     image:
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=200&fit=crop&crop=center",
+      "https://mpwsr.com/cdn/shop/files/file_2e77f3d2-57f4-450c-9e40-5c9764ed809c.jpg?v=1714668544",
   },
   {
     id: "2",
@@ -64,7 +64,7 @@ const featuredProducts: Product[] = [
     sizeRange: '1/2" - 1"',
     pressureRating: "450 PSI",
     image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA_lu4KdJa87wvRs1ulQmfcJpfeEJ1OPKhxQ&s",
   },
   {
     id: "3",
@@ -76,7 +76,7 @@ const featuredProducts: Product[] = [
     sizeRange: '1/2" - 2"',
     pressureRating: "150 PSI",
     image:
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=200&fit=crop&crop=center",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKpNj-jjupm9gOOohAvpbjs-LlHN4Jp6D-8g&s",
   },
   {
     id: "4",
@@ -88,7 +88,7 @@ const featuredProducts: Product[] = [
     sizeRange: '1/2" - 2"',
     pressureRating: "3000 PSI",
     image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center",
+      "https://cdn.shoplightspeed.com/shops/619878/files/70157414/pure-choice-motorsports-wilwood-master-cylinder-ba.jpg",
   },
 ];
 
