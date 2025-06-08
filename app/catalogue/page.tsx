@@ -176,7 +176,7 @@ export default function CataloguePage() {
                       <span className="text-gray-600 dark:text-gray-400">
                         Material:
                       </span>
-                      <span className="font-medium">{product.material}</span>
+                      <span className="font-medium ml-1">{product.material}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-400">

@@ -453,8 +453,8 @@ export default function HomePage() {
               >
                 {[
                   { end: 500, label: "Products", suffix: "+" },
-                  { end: 1000000, label: "Products Sold", suffix: "+" },
-                  { end: 5000, label: "Happy Clients", suffix: "+" },
+                  { end: 1000, label: "Products Sold", suffix: "+" },
+                  { end: 500, label: "Happy Clients", suffix: "+" },
                 ].map((stat, index) => (
                   <motion.div
                     key={index}
@@ -648,7 +648,7 @@ export default function HomePage() {
                           <span className="text-gray-500 dark:text-gray-400">
                             Material:
                           </span>
-                          <span className="font-medium">
+                          <span className="font-medium ml-1">
                             {product.material}
                           </span>
                         </div>
