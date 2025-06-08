@@ -376,8 +376,6 @@ export default function AdminPage() {
   };
 
   const handleRemoveCategory = async (category: string) => {
-    if (window.confirm(`Are you sure you want to remove the category "${category}"?`)) {
-      setOperationError(null)
       const success = await removeCategory(category)
       if (success) {
         toast({
@@ -396,11 +394,9 @@ export default function AdminPage() {
         })
       }
     }
-  }
+
 
   const handleRemoveProduct = async (productId: string) => {
-    if (window.confirm(`Are you sure you want to remove this product?`)) {
-      setOperationError(null)
       const success = await removeProduct(productId)
       if (success) {
         toast({
@@ -418,7 +414,6 @@ export default function AdminPage() {
         });
       }
     }
-  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
