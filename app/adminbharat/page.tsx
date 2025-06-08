@@ -1,16 +1,28 @@
-"use client"
+"use client";
 
-import React from "react"
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { useProducts } from "@/contexts/product-context"
+import React from "react";
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useProducts } from "@/contexts/product-context";
 import {
   Plus,
   Save,
@@ -25,34 +37,34 @@ import {
   Tags,
   AlertCircle,
   RefreshCw,
-} from "lucide-react"
-import { createClient } from "@supabase/supabase-js"
-import { ImageUpload } from "@/components/image-upload"
-import { Toaster } from "@/components/ui/toaster"
-import { useToast } from "@/hooks/use-toast"
-import emailjs from "@emailjs/browser"
+} from "lucide-react";
+import { createClient } from "@supabase/supabase-js";
+import { ImageUpload } from "@/components/image-upload";
+import { Toaster } from "@/components/ui/toaster";
+import { useToast } from "@/hooks/use-toast";
+import emailjs from "@emailjs/browser";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
+);
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.6 },
-}
+};
 
-const ADMIN_PASSWORD = "admin123"
+const ADMIN_PASSWORD = "admin123";
 
 interface UserInquiry {
-  id: string
-  name: string
-  email: string
-  phone?: string
-  location?: string
-  message?: string
-  created_at: string
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  location?: string;
+  message?: string;
+  created_at: string;
 }
 
 export default function AdminPage() {
@@ -67,20 +79,20 @@ export default function AdminPage() {
     loading,
     error,
     refreshData,
-  } = useProducts()
+  } = useProducts();
 
-  const { toast } = useToast()
+  const { toast } = useToast();
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [password, setPassword] = useState("")
-  const [showPassword, setShowPassword] = useState(false)
-  const [authError, setAuthError] = useState("")
-  const [activeTab, setActiveTab] = useState("products")
-  const [userInquiries, setUserInquiries] = useState<UserInquiry[]>([])
-  const [editingProduct, setEditingProduct] = useState<string | null>(null)
-  const [newCategory, setNewCategory] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [operationError, setOperationError] = useState<string | null>(null)
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [authError, setAuthError] = useState("");
+  const [activeTab, setActiveTab] = useState("products");
+  const [userInquiries, setUserInquiries] = useState<UserInquiry[]>([]);
+  const [editingProduct, setEditingProduct] = useState<string | null>(null);
+  const [newCategory, setNewCategory] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [operationError, setOperationError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -93,87 +105,89 @@ export default function AdminPage() {
     image: "",
     applications: "",
     additionalSpecs: "",
-  })
+  });
 
   useEffect(() => {
-    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!)
-    const authenticated = sessionStorage.getItem("admin_authenticated")
+    emailjs.init(process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!);
+    const authenticated = sessionStorage.getItem("admin_authenticated");
     if (authenticated === "true") {
-      setIsAuthenticated(true)
-      fetchUserInquiries()
+      setIsAuthenticated(true);
+      fetchUserInquiries();
     }
-  }, [])
+  }, []);
 
   const fetchUserInquiries = async () => {
     try {
       const { data, error } = await supabase
         .from("user_inquiries")
         .select("*")
-        .order("created_at", { ascending: false })
+        .order("created_at", { ascending: false });
 
       if (error) {
-        console.error("Error fetching user inquiries:", error)
+        console.error("Error fetching user inquiries:", error);
         toast({
           variant: "destructive",
           title: "Error",
           description: `Failed to fetch user inquiries: ${error.message}`,
-        })
+        });
       } else {
-        setUserInquiries(data || [])
+        setUserInquiries(data || []);
         toast({
           title: "Success",
           description: "User inquiries loaded successfully.",
           className: "bg-teal-600 text-white",
-        })
+        });
       }
     } catch (error) {
-      console.error("Error:", error)
+      console.error("Error:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: `Unexpected error: ${error instanceof Error ? error.message : "Unknown error"}`,
-      })
+        description: `Unexpected error: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      });
     }
-  }
+  };
 
   const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (password === ADMIN_PASSWORD) {
-      setIsAuthenticated(true)
-      setAuthError("")
-      sessionStorage.setItem("admin_authenticated", "true")
-      fetchUserInquiries()
+      setIsAuthenticated(true);
+      setAuthError("");
+      sessionStorage.setItem("admin_authenticated", "true");
+      fetchUserInquiries();
       toast({
         title: "Success",
         description: "Logged in successfully.",
-      })
+      });
     } else {
-      setAuthError("Invalid password. Please try again.")
-      setPassword("")
+      setAuthError("Invalid password. Please try again.");
+      setPassword("");
       toast({
         variant: "destructive",
         title: "Error",
         description: "Invalid password. Please try again.",
-      })
+      });
     }
-  }
+  };
 
   const handleLogout = () => {
-    setIsAuthenticated(false)
-    sessionStorage.removeItem("admin_authenticated")
-    setPassword("")
-    setUserInquiries([])
+    setIsAuthenticated(false);
+    sessionStorage.removeItem("admin_authenticated");
+    setPassword("");
+    setUserInquiries([]);
     toast({
       title: "Success",
       description: "Logged out successfully.",
       className: "bg-teal-600 text-white",
-    })
-  }
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsSubmitting(true)
-    setOperationError(null)
+    e.preventDefault();
+    setIsSubmitting(true);
+    setOperationError(null);
 
     if (
       !formData.name ||
@@ -184,14 +198,14 @@ export default function AdminPage() {
       !formData.pressureRating ||
       !formData.temperatureRange
     ) {
-      setOperationError("Please fill in all required fields.")
+      setOperationError("Please fill in all required fields.");
       toast({
         variant: "destructive",
         title: "Error",
         description: "Please fill in all required fields.",
-      })
-      setIsSubmitting(false)
-      return
+      });
+      setIsSubmitting(false);
+      return;
     }
 
     const productData = {
@@ -215,30 +229,30 @@ export default function AdminPage() {
             .filter((spec) => spec.trim())
             .map((spec) => spec.trim())
         : undefined,
-    }
+    };
 
-    console.log("Submitting product data:", productData)
+    console.log("Submitting product data:", productData);
 
     try {
-      let success = false
+      let success = false;
       if (editingProduct) {
-        success = await updateProduct(editingProduct, productData)
+        success = await updateProduct(editingProduct, productData);
         if (success) {
-          setEditingProduct(null)
+          setEditingProduct(null);
           toast({
             title: "Success",
             description: "Product updated successfully!",
             className: "bg-teal-600 text-white",
-          })
+          });
         }
       } else {
-        success = await addProduct(productData)
+        success = await addProduct(productData);
         if (success) {
           toast({
             title: "Success",
             description: "Product added successfully!",
-            className: "bg-teal-600 text-white"
-          })
+            className: "bg-teal-600 text-white",
+          });
         }
       }
 
@@ -254,31 +268,37 @@ export default function AdminPage() {
           image: "",
           applications: "",
           additionalSpecs: "",
-        })
-        setOperationError(null)
+        });
+        setOperationError(null);
       } else {
-        setOperationError("Operation failed. Please try again.")
+        setOperationError("Operation failed. Please try again.");
         toast({
           variant: "destructive",
           title: "Error",
           description: "Operation failed. Please try again.",
-        })
+        });
       }
     } catch (error) {
-      console.error("Error:", error)
-      setOperationError(`An unexpected error occurred: ${error instanceof Error ? error.message : "Unknown error"}`)
+      console.error("Error:", error);
+      setOperationError(
+        `An unexpected error occurred: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
       toast({
         variant: "destructive",
         title: "Error",
-        description: `An unexpected error occurred: ${error instanceof Error ? error.message : "Unknown error"}`,
-      })
+        description: `An unexpected error occurred: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`,
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleEdit = (product: any) => {
-    setEditingProduct(product.id)
+    setEditingProduct(product.id);
     setFormData({
       name: product.name,
       description: product.description,
@@ -289,18 +309,20 @@ export default function AdminPage() {
       temperatureRange: product.temperatureRange,
       image: product.image || "",
       applications: product.applications ? product.applications.join("\n") : "",
-      additionalSpecs: product.additionalSpecs ? product.additionalSpecs.join("\n") : "",
-    })
-    setActiveTab("products")
-    setOperationError(null)
+      additionalSpecs: product.additionalSpecs
+        ? product.additionalSpecs.join("\n")
+        : "",
+    });
+    setActiveTab("products");
+    setOperationError(null);
     toast({
       title: "Editing",
       description: `Editing product: ${product.name}`,
-    })
-  }
+    });
+  };
 
   const handleCancelEdit = () => {
-    setEditingProduct(null)
+    setEditingProduct(null);
     setFormData({
       name: "",
       description: "",
@@ -312,114 +334,122 @@ export default function AdminPage() {
       image: "",
       applications: "",
       additionalSpecs: "",
-    })
-    setOperationError(null)
+    });
+    setOperationError(null);
     toast({
       title: "Cancelled",
       description: "Product editing cancelled.",
-    })
-  }
+    });
+  };
 
   const handleAddCategory = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setOperationError(null)
+    e.preventDefault();
+    setOperationError(null);
 
     if (!newCategory.trim()) {
-      setOperationError("Please enter a category name.")
+      setOperationError("Please enter a category name.");
       toast({
         variant: "destructive",
         title: "Error",
         description: "Please enter a category name.",
-      })
-      return
+      });
+      return;
     }
 
-    const success = await addCategory(newCategory.trim())
+    const success = await addCategory(newCategory.trim());
     if (success) {
-      setNewCategory("")
+      setNewCategory("");
       toast({
         title: "Success",
         description: `Category "${newCategory}" added successfully!`,
         className: "bg-teal-600 text-white",
-      })
-      setOperationError(null)
+      });
+      setOperationError(null);
     } else {
-      setOperationError("Failed to add category. Please try again.")
+      setOperationError("Failed to add category. Please try again.");
       toast({
         variant: "destructive",
         title: "Error",
         description: "Failed to add category. Please try again.",
-      })
+      });
     }
-  }
+  };
 
   const handleRemoveCategory = async (category: string) => {
-    if (window.confirm(`Are you sure you want to remove the category "${category}"?`)) {
-      setOperationError(null)
-      const success = await removeCategory(category)
+    if (
+      window.confirm(
+        `Are you sure you want to remove the category "${category}"?`
+      )
+    ) {
+      setOperationError(null);
+      const success = await removeCategory(category);
       if (success) {
         toast({
           title: "Success",
           description: `Category "${category}" removed successfully!`,
           className: "bg-teal-600 text-white",
-        })
+        });
       } else {
-        setOperationError(`Cannot remove category "${category}". It may be in use by existing products.`)
+        setOperationError(
+          `Cannot remove category "${category}". It may be in use by existing products.`
+        );
         toast({
           variant: "destructive",
           title: "Error",
           description: `Cannot remove category "${category}". It may be in use.`,
-        })
+        });
       }
     }
-  }
+  };
 
   const handleRemoveProduct = async (productId: string) => {
     if (window.confirm(`Are you sure you want to remove this product?`)) {
-      setOperationError(null)
-      const success = await removeProduct(productId)
+      setOperationError(null);
+      const success = await removeProduct(productId);
       if (success) {
         toast({
           title: "Success",
           description: "Product removed successfully!",
           className: "bg-teal-600 text-white",
-        })
-        setOperationError(null)
+        });
+        setOperationError(null);
       } else {
-        setOperationError("Failed to remove product. Please try again.")
+        setOperationError("Failed to remove product. Please try again.");
         toast({
           variant: "destructive",
           title: "Error",
           description: "Failed to remove product. Please try again.",
-        })
+        });
       }
     }
-  }
+  };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
-    })
-  }
+    });
+  };
 
   const handleSelectChange = (value: string) => {
     setFormData({
       ...formData,
       category: value,
-    })
-  }
+    });
+  };
 
   const handleRefresh = async () => {
-    setOperationError(null)
-    await refreshData()
-    await fetchUserInquiries()
+    setOperationError(null);
+    await refreshData();
+    await fetchUserInquiries();
     toast({
       title: "Success",
       description: "Data refreshed successfully.",
       className: "bg-teal-700 text-white",
-    })
-  }
+    });
+  };
 
   if (!isAuthenticated) {
     return (
@@ -441,7 +471,9 @@ export default function AdminPage() {
                 <Lock className="h-8 w-8 text-teal-600 dark:text-green-400" />
               </motion.div>
               <CardTitle className="text-2xl font-bold">Admin Access</CardTitle>
-              <CardDescription>Enter password to access the admin panel</CardDescription>
+              <CardDescription>
+                Enter password to access the admin panel
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin} className="space-y-4">
@@ -464,7 +496,11 @@ export default function AdminPage() {
                       className="absolute right-0 top-0 h-full px-3"
                       onClick={() => setShowPassword(!showPassword)}
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
                     </Button>
                   </div>
                 </div>
@@ -489,18 +525,24 @@ export default function AdminPage() {
           </Card>
         </motion.div>
       </div>
-    )
+    );
   }
 
   if (loading) {
     return (
       <div className="min-h-screen py-20 flex items-center justify-center">
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-center"
+        >
           <div className="w-16 h-16 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-lg text-gray-600 dark:text-gray-300">Loading admin panel...</p>
+          <p className="text-lg text-gray-600 dark:text-gray-300">
+            Loading admin panel...
+          </p>
         </motion.div>
       </div>
-    )
+    );
   }
 
   return (
@@ -508,7 +550,12 @@ export default function AdminPage() {
       <Toaster />
       <div className="container mx-auto px-4">
         {/* Header */}
-        <motion.div initial="initial" animate="animate" variants={fadeInUp} className="text-center mb-12">
+        <motion.div
+          initial="initial"
+          animate="animate"
+          variants={fadeInUp}
+          className="text-center mb-12"
+        >
           <div className="flex justify-between items-center mb-6">
             <div className="flex-1">
               <Badge
@@ -519,14 +566,22 @@ export default function AdminPage() {
               </Badge>
               <h1 className="text-4xl lg:text-5xl font-bold mb-6">
                 Business
-                <span className="text-teal-600 dark:text-green-400"> Management</span>
+                <span className="text-teal-600 dark:text-green-400">
+                  {" "}
+                  Management
+                </span>
               </h1>
               <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-                Manage your products, categories, quotations, and view customer inquiries.
+                Manage your products, categories, quotations, and view customer
+                inquiries.
               </p>
             </div>
             <div className="flex gap-2">
-              <Button onClick={handleRefresh} variant="outline" className="ml-4">
+              <Button
+                onClick={handleRefresh}
+                variant="outline"
+                className="ml-4"
+              >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 Refresh
               </Button>
@@ -539,18 +594,29 @@ export default function AdminPage() {
 
         {/* Error Display */}
         {(error || operationError) && (
-          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6"
+          >
             <div className="bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
               <div className="flex items-center">
                 <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400 mr-2" />
-                <p className="text-red-800 dark:text-red-200">{error || operationError}</p>
+                <p className="text-red-800 dark:text-red-200">
+                  {error || operationError}
+                </p>
               </div>
             </div>
           </motion.div>
         )}
 
         {/* Navigation Tabs */}
-        <motion.div initial="initial" animate="animate" variants={fadeInUp} className="mb-8">
+        <motion.div
+          initial="initial"
+          animate="animate"
+          variants={fadeInUp}
+          className="mb-8"
+        >
           <div className="flex flex-wrap gap-2 justify-center">
             {[
               { id: "products", label: "Products", icon: Package },
@@ -563,7 +629,9 @@ export default function AdminPage() {
                 variant={activeTab === tab.id ? "default" : "outline"}
                 onClick={() => setActiveTab(tab.id)}
                 className={
-                  activeTab === tab.id ? "bg-teal-600 hover:bg-teal-700 dark:bg-green-600 dark:hover:bg-green-700" : ""
+                  activeTab === tab.id
+                    ? "bg-teal-600 hover:bg-teal-700 dark:bg-green-600 dark:hover:bg-green-700"
+                    : ""
                 }
               >
                 <tab.icon className="mr-2 h-4 w-4" />
@@ -581,7 +649,11 @@ export default function AdminPage() {
               <Card>
                 <CardHeader>
                   <CardTitle className="text-2xl flex items-center">
-                    {editingProduct ? <Edit className="mr-2 h-6 w-6" /> : <Plus className="mr-2 h-6 w-6" />}
+                    {editingProduct ? (
+                      <Edit className="mr-2 h-6 w-6" />
+                    ) : (
+                      <Plus className="mr-2 h-6 w-6" />
+                    )}
                     {editingProduct ? "Edit Product" : "Add New Product"}
                   </CardTitle>
                   <CardDescription>
@@ -619,7 +691,10 @@ export default function AdminPage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="category">Category *</Label>
-                      <Select value={formData.category} onValueChange={handleSelectChange}>
+                      <Select
+                        value={formData.category}
+                        onValueChange={handleSelectChange}
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select a category" />
                         </SelectTrigger>
@@ -660,7 +735,9 @@ export default function AdminPage() {
 
                     <div className="grid md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="pressureRating">Pressure Rating *</Label>
+                        <Label htmlFor="pressureRating">
+                          Pressure Rating *
+                        </Label>
                         <Input
                           id="pressureRating"
                           name="pressureRating"
@@ -671,7 +748,9 @@ export default function AdminPage() {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="temperatureRange">Temperature Range *</Label>
+                        <Label htmlFor="temperatureRange">
+                          Temperature Range *
+                        </Label>
                         <Input
                           id="temperatureRange"
                           name="temperatureRange"
@@ -684,15 +763,22 @@ export default function AdminPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="image">Product Image</Label>
-                      <ImageUpload
-                        onImageUpload={(imageUrl) => setFormData({ ...formData, image: imageUrl })}
-                        currentImage={formData.image}
+                      <Label htmlFor="image">Product Image URL</Label>
+                      <Input
+                        id="image"
+                        type="text"
+                        placeholder="Enter image URL"
+                        value={formData.image}
+                        onChange={(e) =>
+                          setFormData({ ...formData, image: e.target.value })
+                        }
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="applications">Applications (one per line)</Label>
+                      <Label htmlFor="applications">
+                        Applications (one per line)
+                      </Label>
                       <Textarea
                         id="applications"
                         name="applications"
@@ -704,7 +790,9 @@ export default function AdminPage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="additionalSpecs">Additional Specifications (one per line)</Label>
+                      <Label htmlFor="additionalSpecs">
+                        Additional Specifications (one per line)
+                      </Label>
                       <Textarea
                         id="additionalSpecs"
                         name="additionalSpecs"
@@ -723,10 +811,19 @@ export default function AdminPage() {
                         disabled={isSubmitting}
                       >
                         <Save className="mr-2 h-4 w-4" />
-                        {isSubmitting ? "Saving..." : editingProduct ? "Update Product" : "Add Product"}
+                        {isSubmitting
+                          ? "Saving..."
+                          : editingProduct
+                          ? "Update Product"
+                          : "Add Product"}
                       </Button>
                       {editingProduct && (
-                        <Button type="button" variant="outline" onClick={handleCancelEdit} size="lg">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={handleCancelEdit}
+                          size="lg"
+                        >
                           Cancel
                         </Button>
                       )}
@@ -740,8 +837,12 @@ export default function AdminPage() {
             <motion.div initial="initial" animate="animate" variants={fadeInUp}>
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-2xl">Current Products ({products.length})</CardTitle>
-                  <CardDescription>Manage your existing product catalogue.</CardDescription>
+                  <CardTitle className="text-2xl">
+                    Current Products ({products.length})
+                  </CardTitle>
+                  <CardDescription>
+                    Manage your existing product catalogue.
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -755,7 +856,9 @@ export default function AdminPage() {
                       >
                         <div className="flex-1">
                           <h4 className="font-medium">{product.name}</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{product.category}</p>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {product.category}
+                          </p>
                         </div>
                         <div className="flex gap-2">
                           <Button
@@ -780,7 +883,8 @@ export default function AdminPage() {
 
                     {products.length === 0 && (
                       <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                        No products added yet. Add your first product using the form.
+                        No products added yet. Add your first product using the
+                        form.
                       </div>
                     )}
                   </div>
@@ -792,14 +896,21 @@ export default function AdminPage() {
 
         {/* Categories Tab */}
         {activeTab === "categories" && (
-          <motion.div initial="initial" animate="animate" variants={fadeInUp} className="max-w-2xl mx-auto">
+          <motion.div
+            initial="initial"
+            animate="animate"
+            variants={fadeInUp}
+            className="max-w-2xl mx-auto"
+          >
             <Card>
               <CardHeader>
                 <CardTitle className="text-2xl flex items-center">
                   <Tags className="mr-2 h-6 w-6" />
                   Manage Categories
                 </CardTitle>
-                <CardDescription>Add new product categories and view existing ones.</CardDescription>
+                <CardDescription>
+                  Add new product categories and view existing ones.
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Add Category Form */}
@@ -821,7 +932,9 @@ export default function AdminPage() {
 
                 {/* Categories List */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-4">Current Categories ({categories.length})</h3>
+                  <h3 className="text-lg font-semibold mb-4">
+                    Current Categories ({categories.length})
+                  </h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {categories.map((category, index) => (
                       <div
@@ -860,7 +973,9 @@ export default function AdminPage() {
                   <Users className="mr-2 h-6 w-6" />
                   User Inquiries ({userInquiries.length})
                 </CardTitle>
-                <CardDescription>View and manage user inquiries from the welcome modal.</CardDescription>
+                <CardDescription>
+                  View and manage user inquiries from the welcome modal.
+                </CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4 max-h-96 overflow-y-auto">
@@ -873,20 +988,33 @@ export default function AdminPage() {
                     >
                       <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                          <h4 className="font-semibold text-lg">{inquiry.name}</h4>
-                          <p className="text-sm text-gray-600 dark:text-gray-400">{inquiry.email}</p>
-                          {inquiry.phone && <p className="text-sm text-gray-600 dark:text-gray-400">{inquiry.phone}</p>}
+                          <h4 className="font-semibold text-lg">
+                            {inquiry.name}
+                          </h4>
+                          <p className="text-sm text-gray-600 dark:text-gray-400">
+                            {inquiry.email}
+                          </p>
+                          {inquiry.phone && (
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {inquiry.phone}
+                            </p>
+                          )}
                           {inquiry.location && (
-                            <p className="text-sm text-gray-600 dark:text-gray-400">{inquiry.location}</p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {inquiry.location}
+                            </p>
                           )}
                         </div>
                         <div>
                           <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                            {new Date(inquiry.created_at).toLocaleDateString()} at{" "}
+                            {new Date(inquiry.created_at).toLocaleDateString()}{" "}
+                            at{" "}
                             {new Date(inquiry.created_at).toLocaleTimeString()}
                           </p>
                           {inquiry.message && (
-                            <p className="text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded-md">{inquiry.message}</p>
+                            <p className="text-sm bg-gray-50 dark:bg-gray-800 p-3 rounded-md">
+                              {inquiry.message}
+                            </p>
                           )}
                         </div>
                       </div>
@@ -895,7 +1023,8 @@ export default function AdminPage() {
 
                   {userInquiries.length === 0 && (
                     <div className="text-center py-8 text-gray-500 dark:text-gray-400">
-                      No user inquiries yet. User inquiries will appear here when visitors submit the welcome modal.
+                      No user inquiries yet. User inquiries will appear here
+                      when visitors submit the welcome modal.
                     </div>
                   )}
                 </div>
@@ -910,26 +1039,38 @@ export default function AdminPage() {
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">Total Products</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Total Products
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-teal-600 dark:text-green-400">{products.length}</div>
+                  <div className="text-3xl font-bold text-teal-600 dark:text-green-400">
+                    {products.length}
+                  </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">Categories</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    Categories
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-teal-600 dark:text-green-400">{categories.length}</div>
+                  <div className="text-3xl font-bold text-teal-600 dark:text-green-400">
+                    {categories.length}
+                  </div>
                 </CardContent>
               </Card>
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="text-sm font-medium">User Inquiries</CardTitle>
+                  <CardTitle className="text-sm font-medium">
+                    User Inquiries
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-teal-600 dark:text-green-400">{userInquiries.length}</div>
+                  <div className="text-3xl font-bold text-teal-600 dark:text-green-400">
+                    {userInquiries.length}
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -945,8 +1086,13 @@ export default function AdminPage() {
                 <CardContent>
                   <div className="space-y-4">
                     {categories.map((category) => {
-                      const count = products.filter((product) => product.category === category).length
-                      const percentage = products.length > 0 ? (count / products.length) * 100 : 0
+                      const count = products.filter(
+                        (product) => product.category === category
+                      ).length;
+                      const percentage =
+                        products.length > 0
+                          ? (count / products.length) * 100
+                          : 0;
                       return (
                         <div key={category} className="space-y-2">
                           <div className="flex justify-between text-sm">
@@ -960,7 +1106,7 @@ export default function AdminPage() {
                             />
                           </div>
                         </div>
-                      )
+                      );
                     })}
                   </div>
                 </CardContent>
@@ -970,5 +1116,5 @@ export default function AdminPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
