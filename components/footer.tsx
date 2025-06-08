@@ -66,11 +66,13 @@ export function Footer() {
               <div className="flex items-start space-x-3">
                 <MapPin className="h-4 w-4 text-teal-400 dark:text-green-400 mt-1 flex-shrink-0" />
                 <span className="text-gray-400 text-sm">
-                  123 Industrial Avenue
+                  Ground Floor A Block,
                   <br />
-                  Manufacturing District
+                  Plot No. 78/b/12, Sy No. 79,
                   <br />
-                  City, State 12345
+                  Vijaya Laxmi Communications, Jeedimetla.
+                  <br />
+                  Hyderabad - 500015
                 </span>
               </div>
               <div className="flex items-center space-x-3">
@@ -86,7 +88,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400 text-sm">© 2024 Bharat Hydraulics & Engineering Co. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">© 2025 Bharat Hydraulics & Engineering Co. All rights reserved.</p>
         </div>
       </div>
     </footer>
