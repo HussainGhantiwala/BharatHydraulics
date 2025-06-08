@@ -28,43 +28,6 @@ import Image from "next/image";
 import { BrandsCarousel } from "@/components/brands-carousel";
 import { FloatingParticles } from "@/components/floating-particles"
 
-// // Placeholder components if not available
-// const BrandsCarousel = () => (
-//   <section className="py-12 bg-gray-100 dark:bg-gray-800">
-//     <div className="container mx-auto px-4 text-center">
-//       <h3 className="text-2xl font-bold mb-6">Trusted by Leading Brands</h3>
-//       <p className="text-gray-600 dark:text-gray-400">
-//         Our partners and clients trust us for quality solutions
-//       </p>
-//     </div>
-//   </section>
-// );
-
-// const FloatingParticles = () => (
-//   <div className="absolute inset-0 overflow-hidden pointer-events-none">
-//     {[...Array(6)].map((_, i) => (
-//       <motion.div
-//         key={i}
-//         className="absolute w-2 h-2 bg-teal-400/20 rounded-full"
-//         animate={{
-//           x: [0, 100, 0],
-//           y: [0, -50, 0],
-//           opacity: [0.2, 0.8, 0.2],
-//         }}
-//         transition={{
-//           duration: 8 + i * 2,
-//           repeat: Infinity,
-//           ease: "easeInOut",
-//         }}
-//         style={{
-//           left: `${Math.random() * 100}%`,
-//           top: `${Math.random() * 100}%`,
-//         }}
-//       />
-//     ))}
-//   </div>
-// );
-
 // Define Product type
 interface Product {
   id: string;
