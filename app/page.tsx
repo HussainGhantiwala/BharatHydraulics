@@ -28,43 +28,6 @@ import Image from "next/image";
 import { BrandsCarousel } from "@/components/brands-carousel";
 import { FloatingParticles } from "@/components/floating-particles"
 
-// // Placeholder components if not available
-// const BrandsCarousel = () => (
-//   <section className="py-12 bg-gray-100 dark:bg-gray-800">
-//     <div className="container mx-auto px-4 text-center">
-//       <h3 className="text-2xl font-bold mb-6">Trusted by Leading Brands</h3>
-//       <p className="text-gray-600 dark:text-gray-400">
-//         Our partners and clients trust us for quality solutions
-//       </p>
-//     </div>
-//   </section>
-// );
-
-// const FloatingParticles = () => (
-//   <div className="absolute inset-0 overflow-hidden pointer-events-none">
-//     {[...Array(6)].map((_, i) => (
-//       <motion.div
-//         key={i}
-//         className="absolute w-2 h-2 bg-teal-400/20 rounded-full"
-//         animate={{
-//           x: [0, 100, 0],
-//           y: [0, -50, 0],
-//           opacity: [0.2, 0.8, 0.2],
-//         }}
-//         transition={{
-//           duration: 8 + i * 2,
-//           repeat: Infinity,
-//           ease: "easeInOut",
-//         }}
-//         style={{
-//           left: `${Math.random() * 100}%`,
-//           top: `${Math.random() * 100}%`,
-//         }}
-//       />
-//     ))}
-//   </div>
-// );
-
 // Define Product type
 interface Product {
   id: string;
@@ -89,7 +52,7 @@ const featuredProducts: Product[] = [
     sizeRange: '1/2" - 1"',
     pressureRating: "150 PSI",
     image:
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=200&fit=crop&crop=center",
+      "https://mpwsr.com/cdn/shop/files/file_2e77f3d2-57f4-450c-9e40-5c9764ed809c.jpg?v=1714668544",
   },
   {
     id: "2",
@@ -101,7 +64,7 @@ const featuredProducts: Product[] = [
     sizeRange: '1/2" - 1"',
     pressureRating: "450 PSI",
     image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTA_lu4KdJa87wvRs1ulQmfcJpfeEJ1OPKhxQ&s",
   },
   {
     id: "3",
@@ -113,7 +76,7 @@ const featuredProducts: Product[] = [
     sizeRange: '1/2" - 2"',
     pressureRating: "150 PSI",
     image:
-      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=200&fit=crop&crop=center",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKpNj-jjupm9gOOohAvpbjs-LlHN4Jp6D-8g&s",
   },
   {
     id: "4",
@@ -125,7 +88,7 @@ const featuredProducts: Product[] = [
     sizeRange: '1/2" - 2"',
     pressureRating: "3000 PSI",
     image:
-      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center",
+      "https://cdn.shoplightspeed.com/shops/619878/files/70157414/pure-choice-motorsports-wilwood-master-cylinder-ba.jpg",
   },
 ];
 
