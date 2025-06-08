@@ -1,37 +1,151 @@
-"use client"
+"use client";
 
-import type React from "react"
-
-import { motion, useInView } from "framer-motion"
-import { useRef, useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ArrowRight, Shield, Truck, Award, Users, Wrench, Factory, Eye, ShoppingCart } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
-import { BrandsCarousel } from "@/components/brands-carousel"
+import type React from "react";
+import { motion, useInView } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  ArrowRight,
+  Shield,
+  Truck,
+  Award,
+  Users,
+  Wrench,
+  Factory,
+  Eye,
+  ShoppingCart,
+} from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
+import { BrandsCarousel } from "@/components/brands-carousel";
 import { FloatingParticles } from "@/components/floating-particles"
-import { useProducts } from "@/contexts/product-context"
-import type { Product } from "@/contexts/product-context"
+
+// // Placeholder components if not available
+// const BrandsCarousel = () => (
+//   <section className="py-12 bg-gray-100 dark:bg-gray-800">
+//     <div className="container mx-auto px-4 text-center">
+//       <h3 className="text-2xl font-bold mb-6">Trusted by Leading Brands</h3>
+//       <p className="text-gray-600 dark:text-gray-400">
+//         Our partners and clients trust us for quality solutions
+//       </p>
+//     </div>
+//   </section>
+// );
+
+// const FloatingParticles = () => (
+//   <div className="absolute inset-0 overflow-hidden pointer-events-none">
+//     {[...Array(6)].map((_, i) => (
+//       <motion.div
+//         key={i}
+//         className="absolute w-2 h-2 bg-teal-400/20 rounded-full"
+//         animate={{
+//           x: [0, 100, 0],
+//           y: [0, -50, 0],
+//           opacity: [0.2, 0.8, 0.2],
+//         }}
+//         transition={{
+//           duration: 8 + i * 2,
+//           repeat: Infinity,
+//           ease: "easeInOut",
+//         }}
+//         style={{
+//           left: `${Math.random() * 100}%`,
+//           top: `${Math.random() * 100}%`,
+//         }}
+//       />
+//     ))}
+//   </div>
+// );
+
+// Define Product type
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  material: string;
+  sizeRange: string;
+  pressureRating: string;
+  image?: string;
+}
+
+// Hardcoded featured products
+const featuredProducts: Product[] = [
+  {
+    id: "1",
+    name: "Brass Hose Adapter",
+    description:
+      "Durable brass hose adapter designed for secure, leak-free connections. Ideal for outdoor and garden use, offering corrosion resistance and long-lasting performance. Easy to install, versatile fit.",
+    category: "Hose - Fittings",
+    material: "Heavy Duty Brass",
+    sizeRange: '1/2" - 1"',
+    pressureRating: "150 PSI",
+    image:
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=200&fit=crop&crop=center",
+  },
+  {
+    id: "2",
+    name: "Equal Elbow",
+    description:
+      "Durable, corrosion-resistant equal elbow hose adapter designed for 90-degree hose connections. Made from high-quality material for reliable, leak-free performance in garden and irrigation systems. Available in multiple sizes.",
+    category: "Hose - Fittings",
+    material: "GI, MS, SS",
+    sizeRange: '1/2" - 1"',
+    pressureRating: "450 PSI",
+    image:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center",
+  },
+  {
+    id: "3",
+    name: "Equal Tee",
+    description:
+      "Sturdy PVC equal tee adapter for creating seamless 3-way hose connections. Ideal for irrigation and garden systems, offering reliable, leak-proof performance. Available in multiple sizes for versatile applications.",
+    category: "Hose - Fittings",
+    material: "PVC",
+    sizeRange: '1/2" - 2"',
+    pressureRating: "150 PSI",
+    image:
+      "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=300&h=200&fit=crop&crop=center",
+  },
+  {
+    id: "4",
+    name: "Banjo Coupling",
+    description:
+      "Durable banjo coupling for secure, leak-proof fluid connections. Ideal for hydraulic, fuel, and oil systems. Compact design ensures easy installation in tight spaces. Compatible with various hose fittings.",
+    category: "Hose - Fittings",
+    material: "GI, MS, SS",
+    sizeRange: '1/2" - 2"',
+    pressureRating: "3000 PSI",
+    image:
+      "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center",
+  },
+];
 
 const fadeInUp = {
   initial: { opacity: 0, y: 60 },
   animate: { opacity: 1, y: 0 },
   transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
-}
+};
 
 const fadeInLeft = {
   initial: { opacity: 0, x: -60 },
   animate: { opacity: 1, x: 0 },
   transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
-}
+};
 
 const fadeInRight = {
   initial: { opacity: 0, x: 60 },
   animate: { opacity: 1, x: 0 },
   transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] },
-}
+};
 
 const staggerContainer = {
   animate: {
@@ -40,13 +154,13 @@ const staggerContainer = {
       delayChildren: 0.1,
     },
   },
-}
+};
 
 const scaleIn = {
   initial: { opacity: 0, scale: 0.8 },
   animate: { opacity: 1, scale: 1 },
   transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
-}
+};
 
 const buttonHover = {
   scale: 1.05,
@@ -57,24 +171,12 @@ const buttonHover = {
     damping: 10,
     duration: 0.2,
   },
-}
+};
 
 const buttonTap = {
   scale: 0.95,
   y: 0,
-}
-
-const cardHover = {
-  y: -12,
-  scale: 1.03,
-  rotateY: 5,
-  transition: {
-    type: "spring",
-    stiffness: 300,
-    damping: 20,
-    duration: 0.3,
-  },
-}
+};
 
 const imageHover = {
   scale: 1.05,
@@ -86,7 +188,7 @@ const imageHover = {
     damping: 20,
     duration: 0.4,
   },
-}
+};
 
 const glowEffect = {
   boxShadow: [
@@ -96,90 +198,105 @@ const glowEffect = {
   ],
   transition: {
     duration: 2,
-    repeat: Number.POSITIVE_INFINITY,
+    repeat: Infinity,
     ease: "easeInOut",
   },
-}
+};
 
-function AnimatedCounter({ end, duration = 2 }: { end: number; duration?: number }) {
-  const [count, setCount] = useState(0)
-  const countRef = useRef(null)
-  const isInView = useInView(countRef, { once: true, margin: "-100px" })
+function AnimatedCounter({
+  end,
+  duration = 2,
+}: {
+  end: number;
+  duration?: number;
+}) {
+  const [count, setCount] = useState(0);
+  const countRef = useRef(null);
+  const isInView = useInView(countRef, { once: true, margin: "-100px" });
 
   useEffect(() => {
     if (isInView) {
-      let startTime: number
+      let startTime: number;
       const animate = (currentTime: number) => {
-        if (!startTime) startTime = currentTime
-        const progress = Math.min((currentTime - startTime) / (duration * 1000), 1)
+        if (!startTime) startTime = currentTime;
+        const progress = Math.min(
+          (currentTime - startTime) / (duration * 1000),
+          1
+        );
 
-        const easeOutQuart = 1 - Math.pow(1 - progress, 4)
-        setCount(Math.floor(easeOutQuart * end))
+        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+        setCount(Math.floor(easeOutQuart * end));
 
         if (progress < 1) {
-          requestAnimationFrame(animate)
+          requestAnimationFrame(animate);
         }
-      }
-      requestAnimationFrame(animate)
+      };
+      requestAnimationFrame(animate);
     }
-  }, [isInView, end, duration])
+  }, [isInView, end, duration]);
 
-  return <span ref={countRef}>{count}</span>
+  return <span ref={countRef}>{count}</span>;
 }
 
 // 3D Tilt Card Component - Professional Version
-function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  const [direction, setDirection] = useState<string | null>(null)
-  const cardRef = useRef<HTMLDivElement>(null)
+function TiltCard({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  const [direction, setDirection] = useState<string | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // More subtle rotation values
   const getRotation = () => {
     switch (direction) {
       case "top":
-        return { rotateX: 3, rotateY: 0 }
+        return { rotateX: 3, rotateY: 0 };
       case "bottom":
-        return { rotateX: -3, rotateY: 0 }
+        return { rotateX: -3, rotateY: 0 };
       case "left":
-        return { rotateX: 0, rotateY: -3 }
+        return { rotateX: 0, rotateY: -3 };
       case "right":
-        return { rotateX: 0, rotateY: 3 }
+        return { rotateX: 0, rotateY: 3 };
       default:
-        return { rotateX: 0, rotateY: 0 }
+        return { rotateX: 0, rotateY: 0 };
     }
-  }
+  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return
+    if (!cardRef.current) return;
 
-    const rect = cardRef.current.getBoundingClientRect()
-    const width = rect.width
-    const height = rect.height
-    const mouseX = e.clientX - rect.left
-    const mouseY = e.clientY - rect.top
+    const rect = cardRef.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
 
     // Determine which quadrant the mouse is in
-    const centerX = width / 2
-    const centerY = height / 2
-    const deltaX = mouseX - centerX
-    const deltaY = mouseY - centerY
+    const centerX = width / 2;
+    const centerY = height / 2;
+    const deltaX = mouseX - centerX;
+    const deltaY = mouseY - centerY;
 
     // Only change direction when significantly away from center (reduces jitter)
     if (Math.abs(deltaX) < width * 0.2 && Math.abs(deltaY) < height * 0.2) {
-      setDirection(null)
-      return
+      setDirection(null);
+      return;
     }
 
     // Determine primary direction (horizontal or vertical)
     if (Math.abs(deltaX) > Math.abs(deltaY)) {
-      setDirection(deltaX > 0 ? "right" : "left")
+      setDirection(deltaX > 0 ? "right" : "left");
     } else {
-      setDirection(deltaY > 0 ? "bottom" : "top")
+      setDirection(deltaY > 0 ? "bottom" : "top");
     }
-  }
+  };
 
   const handleMouseLeave = () => {
-    setDirection(null)
-  }
+    setDirection(null);
+  };
 
   return (
     <motion.div
@@ -198,13 +315,10 @@ function TiltCard({ children, className = "" }: { children: React.ReactNode; cla
     >
       <div style={{ transform: "translateZ(10px)" }}>{children}</div>
     </motion.div>
-  )
+  );
 }
 
 export default function HomePage() {
-  const { products } = useProducts()
-  const featuredProducts = products.slice(0, 4)
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
   return (
     <div className="min-h-screen">
       {/* Hero Section with Gradient Background */}
@@ -220,7 +334,7 @@ export default function HomePage() {
               className="absolute inset-0"
               style={{
                 backgroundImage: `radial-gradient(circle at 25% 25%, rgba(20, 184, 166, 0.1) 0%, transparent 50%),
-                               radial-gradient(circle at 75% 75%, rgba(34, 197, 94, 0.1) 0%, transparent 50%)`,
+                              radial-gradient(circle at 75% 75%, rgba(34, 197, 94, 0.1) 0%, transparent 50%)`,
               }}
             />
           </div>
@@ -236,7 +350,10 @@ export default function HomePage() {
             <motion.div variants={fadeInLeft} className="space-y-6">
               <div className="space-y-7">
                 <motion.div variants={scaleIn}>
-                  <motion.div whileHover={{ scale: 1.05, rotate: [0, -1, 1, 0] }} transition={{ duration: 0.3 }}>
+                  <motion.div
+                    whileHover={{ scale: 1.05, rotate: [0, -1, 1, 0] }}
+                    transition={{ duration: 0.3 }}
+                  >
                     <Badge
                       variant="secondary"
                       className="bg-teal-100 text-teal-800 dark:bg-green-900 dark:text-green-100 px-6 py-3 text-base font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
@@ -251,10 +368,13 @@ export default function HomePage() {
                   variants={fadeInUp}
                 >
                   <motion.span
-                    whileHover={{ scale: 1.02, textShadow: "0 0 8px rgba(20, 184, 166, 0.3)" }}
+                    whileHover={{
+                      scale: 1.02,
+                      textShadow: "0 0 8px rgba(20, 184, 166, 0.3)",
+                    }}
                     transition={{ duration: 0.2 }}
                   >
-                    Bharat Hydraulics 
+                    Bharat Hydraulics
                   </motion.span>
                   <motion.span
                     className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-400 dark:to-green-400 block"
@@ -274,24 +394,35 @@ export default function HomePage() {
                   whileHover={{ scale: 1.01 }}
                   transition={{ duration: 0.2 }}
                 >
-                  Professional supplier of high-quality PVC pipe clamps, flanges, and fittings for industrial and
-                  commercial applications worldwide.
+                  Professional supplier of high-quality PVC pipe clamps,
+                  flanges, and fittings for industrial and commercial
+                  applications worldwide.
                 </motion.p>
               </div>
 
-              <motion.div className="flex flex-col sm:flex-row gap-6" variants={fadeInUp}>
-                <motion.div whileHover={buttonHover} whileTap={buttonTap} className="group">
+              <motion.div
+                className="flex flex-col sm:flex-row gap-6"
+                variants={fadeInUp}
+              >
+                <motion.div
+                  whileHover={buttonHover}
+                  whileTap={buttonTap}
+                  className="group"
+                >
                   <Button
                     asChild
                     size="lg"
                     className="bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 dark:from-teal-600 dark:to-green-600 dark:hover:from-teal-700 dark:hover:to-green-700 px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-2xl transition-all duration-300 rounded-full relative overflow-hidden"
                   >
-                    <Link href="/catalogue" className="relative z-10 flex items-center">
+                    <Link
+                      href="/catalogue"
+                      className="relative z-10 flex items-center"
+                    >
                       View Catalogue
                       <motion.div
                         className="ml-2"
                         animate={{ x: [0, 4, 0] }}
-                        transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
+                        transition={{ duration: 1.5, repeat: Infinity }}
                       >
                         <ArrowRight className="h-5 w-5" />
                       </motion.div>
@@ -316,11 +447,14 @@ export default function HomePage() {
                 </motion.div>
               </motion.div>
 
-              <motion.div className="grid grid-cols-3 gap-8 pt-8" variants={staggerContainer}>
+              <motion.div
+                className="grid grid-cols-3 gap-8 pt-8"
+                variants={staggerContainer}
+              >
                 {[
                   { end: 500, label: "Products", suffix: "+" },
-                  { end: 15, label: "Years Experience", suffix: "+" },
-                  { end: 1000, label: "Happy Clients", suffix: "+" },
+                  { end: 1000000, label: "Products Sold", suffix: "+" },
+                  { end: 5000, label: "Happy Clients", suffix: "+" },
                 ].map((stat, index) => (
                   <motion.div
                     key={index}
@@ -351,9 +485,12 @@ export default function HomePage() {
                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
               >
                 <div className="relative overflow-hidden rounded-3xl shadow-2xl group-hover:shadow-3xl transition-shadow duration-500">
-                  <motion.div whileHover={{ scale: 1.1 }} transition={{ duration: 0.6 }}>
+                  <motion.div
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.6 }}
+                  >
                     <Image
-                      src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=600&h=600&fit=crop&crop=center"
+                      src="/Image/bharat-hero.jpg"
                       alt="PVC Pipe Clamps and Flanges"
                       width={600}
                       height={600}
@@ -371,7 +508,7 @@ export default function HomePage() {
                     }}
                     transition={{
                       duration: 3,
-                      repeat: Number.POSITIVE_INFINITY,
+                      repeat: Infinity,
                       ease: "easeInOut",
                     }}
                   />
@@ -384,7 +521,7 @@ export default function HomePage() {
                     }}
                     transition={{
                       duration: 4,
-                      repeat: Number.POSITIVE_INFINITY,
+                      repeat: Infinity,
                       ease: "easeInOut",
                       delay: 1,
                     }}
@@ -402,7 +539,7 @@ export default function HomePage() {
                 }}
                 transition={{
                   duration: 8,
-                  repeat: Number.POSITIVE_INFINITY,
+                  repeat: Infinity,
                   ease: "easeInOut",
                 }}
               />
@@ -416,7 +553,7 @@ export default function HomePage() {
                 }}
                 transition={{
                   duration: 6,
-                  repeat: Number.POSITIVE_INFINITY,
+                  repeat: Infinity,
                   ease: "easeInOut",
                 }}
               />
@@ -435,14 +572,20 @@ export default function HomePage() {
             variants={staggerContainer}
             className="text-center mb-20"
           >
-            <motion.h2 variants={fadeInUp} className="text-4xl lg:text-5xl font-bold mb-6">
+            <motion.h2
+              variants={fadeInUp}
+              className="text-4xl lg:text-5xl font-bold mb-6"
+            >
               Featured
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-400 dark:to-green-400">
                 {" "}
                 Products
               </span>
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
+            <motion.p
+              variants={fadeInUp}
+              className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto"
+            >
               Discover our most popular and innovative PVC pipe solutions
             </motion.p>
           </motion.div>
@@ -454,7 +597,7 @@ export default function HomePage() {
             variants={staggerContainer}
             className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12"
           >
-            {featuredProducts.map((product, index) => (
+            {featuredProducts.map((product) => (
               <motion.div key={product.id} variants={fadeInUp}>
                 <TiltCard className="h-full">
                   <Card className="h-full hover:shadow-2xl transition-all duration-500 border-0 shadow-lg group overflow-hidden relative bg-white dark:bg-gray-800 flex flex-col">
@@ -470,8 +613,7 @@ export default function HomePage() {
                           <Image
                             src={
                               product.image ||
-                              "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center" ||
-                              "/placeholder.svg"
+                              "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=200&fit=crop&crop=center"
                             }
                             alt={product.name}
                             width={300}
@@ -481,7 +623,10 @@ export default function HomePage() {
                         </motion.div>
                         <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                         <div className="absolute top-3 right-3">
-                          <Badge variant="secondary" className="bg-white/90 text-gray-800 backdrop-blur-sm">
+                          <Badge
+                            variant="secondary"
+                            className="bg-white/90 text-gray-800 backdrop-blur-sm"
+                          >
                             {product.category}
                           </Badge>
                         </div>
@@ -492,22 +637,36 @@ export default function HomePage() {
                       <CardTitle className="text-lg mb-3 line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-green-400 transition-colors duration-300 min-h-[3.5rem]">
                         {product.name}
                       </CardTitle>
-                      <CardDescription className="mb-4 line-clamp-3 text-sm flex-1 min-h-[4.5rem]">
-                        {product.description}
-                      </CardDescription>
+                      <div className="mb-4 text-sm flex-1 overflow-y-auto max-h-24 scrollbar-thin scrollbar-thumb-teal-400 scrollbar-track-gray-100 dark:scrollbar-thumb-green-400 dark:scrollbar-track-gray-800">
+                        <CardDescription className="text-sm">
+                          {product.description}
+                        </CardDescription>
+                      </div>
 
                       <div className="space-y-2 mb-6 text-xs">
                         <div className="flex justify-between">
-                          <span className="text-gray-500 dark:text-gray-400">Material:</span>
-                          <span className="font-medium">{product.material}</span>
+                          <span className="text-gray-500 dark:text-gray-400">
+                            Material:
+                          </span>
+                          <span className="font-medium">
+                            {product.material}
+                          </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-500 dark:text-gray-400">Size:</span>
-                          <span className="font-medium">{product.sizeRange}</span>
+                          <span className="text-gray-500 dark:text-gray-400">
+                            Size:
+                          </span>
+                          <span className="font-medium">
+                            {product.sizeRange}
+                          </span>
                         </div>
                         <div className="flex justify-between">
-                          <span className="text-gray-500 dark:text-gray-400">Pressure:</span>
-                          <span className="font-medium">{product.pressureRating}</span>
+                          <span className="text-gray-500 dark:text-gray-400">
+                            Pressure:
+                          </span>
+                          <span className="font-medium">
+                            {product.pressureRating}
+                          </span>
                         </div>
                       </div>
 
@@ -517,20 +676,20 @@ export default function HomePage() {
                           size="sm"
                           className="flex-1 bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white"
                         >
-                          <Link href={`/catalogue/${product.id}`}>
+                          <Link href={`/catalogue?productId=${product.id}`}>
                             <Eye className="mr-1 h-3 w-3" />
                             View
                           </Link>
                         </Button>
                         <Button
+                          asChild
                           size="sm"
                           variant="outline"
                           className="flex-1 border-teal-200 dark:border-green-700 hover:bg-teal-50 dark:hover:bg-green-950"
                         >
-                          
-                          <ShoppingCart className="mr-1 h-3 w-3" />
                           <Link href="/contact">
-                          Quote
+                            <ShoppingCart className="mr-1 h-3 w-3" />
+                            Quote
                           </Link>
                         </Button>
                       </div>
@@ -577,11 +736,18 @@ export default function HomePage() {
             variants={staggerContainer}
             className="text-center mb-20"
           >
-            <motion.h2 variants={fadeInUp} className="text-4xl lg:text-5xl font-bold mb-6">
+            <motion.h2
+              variants={fadeInUp}
+              className="text-4xl lg:text-5xl font-bold mb-6"
+            >
               Why Choose Bharat Hydraulics & Engineering Co.?
             </motion.h2>
-            <motion.p variants={fadeInUp} className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-              We deliver exceptional quality and service that sets us apart in the industry
+            <motion.p
+              variants={fadeInUp}
+              className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto"
+            >
+              We deliver exceptional quality and service that sets us apart in
+              the industry
             </motion.p>
           </motion.div>
 
@@ -596,42 +762,48 @@ export default function HomePage() {
               {
                 icon: Shield,
                 title: "Premium Quality",
-                description: "All products meet international standards with rigorous quality control",
+                description:
+                  "All products meet international standards with rigorous quality control",
                 color: "from-blue-500 to-cyan-500",
                 bgColor: "rgba(59, 130, 246, 0.1)",
               },
               {
                 icon: Truck,
                 title: "Fast Delivery",
-                description: "Quick and reliable shipping to get your projects moving",
+                description:
+                  "Quick and reliable shipping to get your projects moving",
                 color: "from-green-500 to-teal-500",
                 bgColor: "rgba(34, 197, 94, 0.1)",
               },
               {
                 icon: Award,
                 title: "Industry Certified",
-                description: "ISO certified with proven track record in the industry",
+                description:
+                  "ISO certified with proven track record in the industry",
                 color: "from-purple-500 to-pink-500",
                 bgColor: "rgba(168, 85, 247, 0.1)",
               },
               {
                 icon: Users,
                 title: "Expert Support",
-                description: "Dedicated technical support team to assist with your needs",
+                description:
+                  "Dedicated technical support team to assist with your needs",
                 color: "from-orange-500 to-red-500",
                 bgColor: "rgba(249, 115, 22, 0.1)",
               },
               {
                 icon: Wrench,
                 title: "Custom Solutions",
-                description: "Tailored products and solutions for specific requirements",
+                description:
+                  "Tailored products and solutions for specific requirements",
                 color: "from-indigo-500 to-blue-500",
                 bgColor: "rgba(99, 102, 241, 0.1)",
               },
               {
                 icon: Factory,
                 title: "Manufacturing Excellence",
-                description: "State-of-the-art manufacturing facilities and processes",
+                description:
+                  "State-of-the-art manufacturing facilities and processes",
                 color: "from-emerald-500 to-green-500",
                 bgColor: "rgba(16, 185, 129, 0.1)",
               },
@@ -695,7 +867,10 @@ export default function HomePage() {
           >
             <motion.h2
               className="text-4xl lg:text-6xl font-bold text-white mb-8"
-              whileHover={{ scale: 1.02, textShadow: "0 0 20px rgba(255,255,255,0.3)" }}
+              whileHover={{
+                scale: 1.02,
+                textShadow: "0 0 20px rgba(255,255,255,0.3)",
+              }}
               transition={{ duration: 0.3 }}
             >
               Ready to Get Started?
@@ -705,7 +880,8 @@ export default function HomePage() {
               whileHover={{ scale: 1.01 }}
               transition={{ duration: 0.2 }}
             >
-              Explore our comprehensive catalogue or get in touch with our experts for personalized solutions.
+              Explore our comprehensive catalogue or get in touch with our
+              experts for personalized solutions.
             </motion.p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               <motion.div whileHover={buttonHover} whileTap={buttonTap}>
@@ -735,5 +911,5 @@ export default function HomePage() {
 
       {/* Quotation Modal */}
     </div>
-  )
+  );
 }
