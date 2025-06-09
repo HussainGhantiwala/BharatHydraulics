@@ -64,9 +64,9 @@ const InteractiveMap: React.FC = () => {
           }}
         >
           <TileLayer
-            attribution='© <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tiles.stadiamaps.com/tiles/alidade_satellite/{z}/{x}/{y}{r}.jpg"
-          />
+  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  attribution='&copy; OpenStreetMap contributors'
+/>
           <Marker position={position}>
             <Popup>Bharath Hydraulics and Engineering Co.</Popup>
           </Marker>
@@ -77,7 +77,7 @@ const InteractiveMap: React.FC = () => {
         17°31'45.9"N 78°25'57.3"E
       </div>
       <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-        Satellite View
+        Street View
       </div>
     </div>
   )
