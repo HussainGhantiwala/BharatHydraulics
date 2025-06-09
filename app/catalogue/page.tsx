@@ -151,7 +151,7 @@ export default function CataloguePage() {
                       alt={product.name}
                       width={300}
                       height={200}
-                      className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-48 object-contain group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute top-2 right-2">
                       <Badge
@@ -176,7 +176,9 @@ export default function CataloguePage() {
                       <span className="text-gray-600 dark:text-gray-400">
                         Material:
                       </span>
-                      <span className="font-medium ml-1">{product.material}</span>
+                      <span className="font-medium ml-1">
+                        {product.material}
+                      </span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600 dark:text-gray-400">
