@@ -14,6 +14,62 @@ import { createClient } from "@supabase/supabase-js"
 
 const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!)
 
+function Toast({
+  show,
+  title,
+  description,
+  variant = "default",
+  onClose,
+}: {
+  show: boolean
+  title: string
+  description?: string
+  variant?: "default" | "destructive"
+  onClose: () => void
+}) {
+  const bgColor = variant === "destructive" ? "bg-red-600" : "bg-teal-600"
+  const textColor = "text-white"
+
+  useEffect(() => {
+    if (show) {
+      const timer = setTimeout(() => {
+        onClose()
+      }, 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [show, onClose])
+
+  return (
+    <AnimatePresence>
+      {show && (
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 50 }}
+          transition={{ duration: 0.3 }}
+          className={`fixed bottom-4 right-4 max-w-sm rounded-lg shadow-lg p-4 ${bgColor} ${textColor} z-[1000]`}
+        >
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="font-bold text-sm">{title}</h3>
+              {description && <p className="text-xs mt-1">{description}</p>}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onClose}
+              className="text-white hover:bg-transparent/20"
+              aria-label="Close notification"
+            >
+              ✕
+            </Button>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  )
+}
+
 interface UserInfo {
   name: string
   email: string
@@ -23,6 +79,17 @@ interface UserInfo {
 }
 
 export function UserInfoModal() {
+   const [toast, setToast] = useState<{
+      show: boolean
+      title: string
+      description: string | null
+      variant: "default" | "destructive"
+    }>({
+      show: false,
+      title: "",
+      description: null,
+      variant: "default",
+    })
   const [isOpen, setIsOpen] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
   const [formData, setFormData] = useState<UserInfo>({
@@ -77,13 +144,20 @@ export function UserInfoModal() {
         localStorage.setItem("user_info_submitted", "true")
         setIsOpen(false)
         // Show success message with better UX
-        setTimeout(() => {
-          alert("🎉 Thank you for your interest! We will contact you soon.")
-        }, 300)
+        setToast({
+          show: true,
+          title: "Thank you for your submission!",
+          description: "We'll get back to you shortly.",
+          variant: "default",
+        })
       }
     } catch (error) {
-      console.error("Error:", error)
-      alert("There was an error saving your information. Please try again.")
+      setToast({
+        show:true,
+        title: "Submission Error",
+        description: "There was an error submitting your information. Please try again later.",
+        variant: "destructive",
+      })
     } finally {
       setIsSubmitting(false)
     }
@@ -110,6 +184,15 @@ export function UserInfoModal() {
   if (!isVisible) return null
 
   return (
+    <>
+      <Toast
+        show={toast.show}
+        title={toast.title}
+        description={toast.description ?? undefined}
+        variant={toast.variant}
+        onClose={() => setToast({ ...toast, show: false })}
+      />
+    
     <AnimatePresence>
       {isOpen && (
         <Dialog open={isOpen} onOpenChange={handleClose}>
@@ -297,5 +380,6 @@ export function UserInfoModal() {
         </Dialog>
       )}
     </AnimatePresence>
+    </>
   )
 }
