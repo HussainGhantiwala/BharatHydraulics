@@ -9,7 +9,7 @@ export function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gray-900 dark:bg-black dark:bg-green-600 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gray-900 dark:bg-black dark:bg-black-600 rounded-lg flex items-center justify-center">
                 <img src="/Image/bh-logo.png" alt="Logo" className="h-5 w-5" />
               </div>
               <span className="text-xl font-bold">Bharat Hydraulics & Engineering Co.</span>

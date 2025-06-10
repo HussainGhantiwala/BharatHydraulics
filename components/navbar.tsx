@@ -24,7 +24,7 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 bg-white-600 dark:bg-green-600 rounded-lg flex items-center justify-center">
+            <div className="w-8 h-8 bg-white-600 dark:bg-black-600 rounded-lg flex items-center justify-center">
               <img src="/Image/bh-logo.png" alt="Logo" className="h-5 w-5" />
             </div>
             <span className="text-xl font-bold text-gray-900 dark:text-white">Bharat Hydraulics & Engineering Co.</span>
