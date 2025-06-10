@@ -55,7 +55,7 @@ const fadeInUp = {
   transition: { duration: 0.6 },
 };
 
-const ADMIN_PASSWORD = "admin123";
+const ADMIN_PASSWORD = "Bharat@786";
 
 interface UserInquiry {
   id: string;
