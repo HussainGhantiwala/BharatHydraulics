@@ -524,6 +524,9 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
+      
+      {/* Brands Carousel */}
+      <BrandsCarousel />
 
       {/* Featured Products Section */}
       <section className="py-24 bg-gray-50 dark:bg-gray-900/50">
@@ -686,8 +689,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Brands Carousel */}
-      <BrandsCarousel />
 
       {/* Enhanced Features Section */}
       <section className="py-24 bg-white dark:bg-gray-900">
