@@ -862,7 +862,7 @@ export default function HomePage() {
                   asChild
                   size="lg"
                   variant="outline"
-                  className="border-2 border-white text-white hover:bg-white hover:text-teal-600 dark:hover:text-green-800 px-10 py-4 text-lg font-semibold rounded-full backdrop-blur-sm transition-all duration-300 hover:shadow-xl"
+                  className="border-2 border-white text-teal hover:bg-white hover:text-teal-600 dark:hover:text-green-800 px-10 py-4 text-lg font-semibold rounded-full backdrop-blur-sm transition-all duration-300 hover:shadow-xl"
                 >
                   <Link href="/contact">Get Quote</Link>
                 </Button>
