@@ -17,7 +17,7 @@ L.Icon.Default.mergeOptions({
 const MapClickHandler: React.FC = () => {
   const latitude = 17.529417
   const longitude = 78.432583
-  const googleMapsUrl = `https://www.google.com/maps/@${latitude},${longitude},18z/data=!3m1!1e3`
+  const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`
 
   useMapEvent("click", () => {
     window.open(googleMapsUrl, "_blank")
