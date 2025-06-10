@@ -26,7 +26,7 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { BrandsCarousel } from "@/components/brands-carousel";
-import { FloatingParticles } from "@/components/floating-particles"
+import { FloatingParticles } from "@/components/floating-particles";
 
 // Define Product type
 interface Product {
@@ -340,7 +340,7 @@ export default function HomePage() {
                     Bharat Hydraulics
                   </motion.span>
                   <motion.span
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-400 dark:to-green-400 block"
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-400 dark:to-green-400 block leading-[1.2]"
                     variants={fadeInUp}
                     whileHover={{
                       scale: 1.02,
@@ -524,7 +524,7 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
-      
+
       {/* Brands Carousel */}
       <BrandsCarousel />
 
@@ -688,7 +688,6 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
-
 
       {/* Enhanced Features Section */}
       <section className="py-24 bg-white dark:bg-gray-900">
