@@ -453,7 +453,7 @@ export default function HomePage() {
                     transition={{ duration: 0.6 }}
                   >
                     <Image
-                      src="/Image/bharat-hero.jpg"
+                      src="/Image/BH_LOGO.png"
                       alt="PVC Pipe Clamps and Flanges"
                       width={600}
                       height={600}
