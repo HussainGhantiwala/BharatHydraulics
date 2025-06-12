@@ -54,15 +54,6 @@ function Toast({
               <h3 className="font-bold text-sm">{title}</h3>
               {description && <p className="text-xs mt-1">{description}</p>}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="text-white hover:bg-transparent/20"
-              aria-label="Close notification"
-            >
-              ✕
-            </Button>
           </div>
         </motion.div>
       )}
@@ -222,14 +213,6 @@ export function UserInfoModal() {
                       Welcome to Bharat Hydraulics & Engineering Co.!
                     </DialogTitle>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleClose}
-                    className="text-gray-400 hover:text-gray-600 rounded-full"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
                 </div>
                 <DialogDescription className="text-base text-gray-600 dark:text-gray-300">
                   We'd love to learn more about your needs and how we can help you with premium PVC solutions. This will
