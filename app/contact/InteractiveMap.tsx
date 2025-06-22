@@ -22,8 +22,8 @@ L.Icon.Default.mergeOptions({
 
 // Map Click Handler Component
 const MapClickHandler: React.FC = () => {
-  const latitude = 17.433201653467272;
-  const longitude = 78.49290006293359;
+  const latitude = 17.43332703192027;
+  const longitude = 78.49291615420282;
   const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
 
   useMapEvent("click", () => {
@@ -34,8 +34,8 @@ const MapClickHandler: React.FC = () => {
 };
 
 const InteractiveMap: React.FC = () => {
-  const latitude =  17.433201653467272;
-  const longitude = 78.49290006293359;
+  const latitude =  17.43332703192027//17.43332703192027, 78.49291615420282
+  const longitude =78.49291615420282
   const position: L.LatLngExpression = [latitude, longitude];
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -86,7 +86,7 @@ const InteractiveMap: React.FC = () => {
         </MapContainer>
       )}
       <div className="absolute bottom-2 left-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs font-mono">
-        17°31'45.9"N 78°25'57.3"E
+        17°25'59.5"N  78°29'36.16"E
       </div>
       <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
         Street View
