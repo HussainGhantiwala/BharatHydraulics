@@ -235,8 +235,8 @@ export default function ContactPage() {
             {[
               {
                 icon: MapPin,
-                title: "Address",
-                content: "Ground floor A block,\nPlot number 78/b/12, sy no 79,\nVijaya laxmi communications Jeedimetla.",
+                title: "Address", //4-3-17to24/2 City light towers, Hill St, Rani Gunj, Telangana 500003
+                content: "4-3-17to24/2 City light towers,\nHill St, Rani Gunj\nTelangana 500003.",
               },
               {
                 icon: Phone,

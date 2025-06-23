@@ -22,8 +22,8 @@ L.Icon.Default.mergeOptions({
 
 // Map Click Handler Component
 const MapClickHandler: React.FC = () => {
-  const latitude = 17.43332703192027;
-  const longitude = 78.49291615420282;
+  const latitude = 17.43340;
+  const longitude = 78.49289;
   const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`;
 
   useMapEvent("click", () => {
@@ -34,8 +34,8 @@ const MapClickHandler: React.FC = () => {
 };
 
 const InteractiveMap: React.FC = () => {
-  const latitude =  17.43332703192027//17.43332703192027, 78.49291615420282
-  const longitude =78.49291615420282
+  const latitude =  17.43340//17.43332703192027, 78.49291615420282
+  const longitude =78.49289
   const position: L.LatLngExpression = [latitude, longitude];
   const mapRef = useRef<L.Map | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
