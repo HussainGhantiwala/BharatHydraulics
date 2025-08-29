@@ -62,7 +62,7 @@ export default function AboutPage() {
       <span className="text-teal-600 dark:text-green-400"> Reliability</span>
     </h1>
     <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto">
-      Bharat Hydraulics and Engineering Co., based in Hyderabad, India, delivers high-performance hydraulic tube fittings built to power the next generation of hydraulic systems.
+      Bharat Tools and Hardware, based in Hyderabad, India, delivers high-performance hydraulic tube fittings built to power the next generation of hydraulic systems.
     </p>
   </motion.div>
 </motion.div>
@@ -79,7 +79,7 @@ export default function AboutPage() {
     <h2 className="text-3xl font-bold mb-6">Our Story</h2>
     <div className="space-y-4 text-gray-600 dark:text-gray-300">
       <p>
-        Founded in 2024, Bharat Hydraulics and Engineering Co. was established with a clear mission: to engineer durable, leak-proof hydraulic fittings capable of thriving in demanding industrial environments.
+        Founded in 2024, Bharat Tools and Hardware was established with a clear mission: to engineer durable, leak-proof hydraulic fittings capable of thriving in demanding industrial environments.
       </p>
       <p>
         From precision CNC machining to rigorous quality checks, every product is built with care and performance in mind. Our team is passionate about solving complex fluid power challenges through innovative design and engineering.

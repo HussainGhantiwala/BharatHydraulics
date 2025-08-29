@@ -12,7 +12,7 @@ export function Footer() {
               <div className="w-8 h-8 bg-gray-900 dark:bg-black dark:bg-black-600 rounded-lg flex items-center justify-center">
                 <img src="/Image/bh-logo.png" alt="Logo" className="h-5 w-5" />
               </div>
-              <span className="text-xl font-bold">Bharat Hydraulics & Engineering Co.</span>
+              <span className="text-xl font-bold">Bharat Tools & Hardware</span>
             </div>
             <p className="text-gray-400 text-sm leading-relaxed">
               Leading supplier of premium PVC pipe clamps, flanges, and fittings for industrial and commercial
@@ -88,7 +88,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center">
-          <p className="text-gray-400 text-sm">© 2025 Bharat Hydraulics & Engineering Co. All rights reserved.</p>
+          <p className="text-gray-400 text-sm">© 2025 Bharat Tools & Hardware All rights reserved.</p>
         </div>
       </div>
     </footer>
