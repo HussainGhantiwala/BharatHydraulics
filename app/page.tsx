@@ -337,7 +337,7 @@ export default function HomePage() {
                     }}
                     transition={{ duration: 0.2 }}
                   >
-                    Bharat Hydraulics
+                    Bharat Tools
                   </motion.span>
                   <motion.span
                     className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-400 dark:to-green-400 block leading-[1.2]"
@@ -347,7 +347,7 @@ export default function HomePage() {
                     }}
                     transition={{ duration: 0.3 }}
                   >
-                    & Engineering Co.
+                    & Hardware
                   </motion.span>
                 </motion.h1>
 
@@ -703,7 +703,7 @@ export default function HomePage() {
               variants={fadeInUp}
               className="text-4xl lg:text-5xl font-bold mb-6"
             >
-              Why Choose Bharat Hydraulics & Engineering Co.?
+              Why Choose Bharat Tools & Hardware?
             </motion.h2>
             <motion.p
               variants={fadeInUp}

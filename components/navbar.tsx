@@ -27,7 +27,7 @@ export function Navbar() {
             <div className="w-8 h-8 bg-white-600 dark:bg-black-600 rounded-lg flex items-center justify-center">
               <img src="/Image/bh-logo.png" alt="Logo" className="h-5 w-5" />
             </div>
-            <span className="text-xl font-bold text-gray-900 dark:text-white">Bharat Hydraulics & Engineering Co.</span>
+            <span className="text-xl font-bold text-gray-900 dark:text-white">Bharat Tools & Hardware</span>
           </Link>
 
           {/* Desktop Navigation */}

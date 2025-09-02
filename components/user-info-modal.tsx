@@ -210,7 +210,7 @@ export function UserInfoModal() {
                       <Sparkles className="h-4 w-4 text-white" />
                     </motion.div>
                     <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-teal-600 to-blue-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">
-                      Welcome to Bharat Hydraulics & Engineering Co.!
+                      Welcome to Bharat Tools & Hardware!
                     </DialogTitle>
                   </div>
                 </div>
